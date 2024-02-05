@@ -1,10 +1,12 @@
 import Episode from './scene/episode.js';
+import Startup from './scene/startup.js';
 export default class Game {
   constructor() {
     this.initSettings();
     this.canvas = wx.createCanvas();
     this.context = canvas.getContext('2d');
     this.episode = Episode;
+    this.startup = Startup;
     this.currentScene = new this.episode(this);
     canvas.addEventListener('touchstart', (e) => {
       this.currentScene.touchHandler(e);

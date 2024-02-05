@@ -16,7 +16,7 @@ export default class Instruction {
     // 绘制背景
     this.backgroundImage = new Image();
     this.backgroundImage.src = 'image/storypartone.jpg';
-    soundManager.play('laugh');
+    soundManager.play('done');
     // 添加定时器，每隔 displayTimePerImage 毫秒切换一次图片
     this.timerId = setInterval(() => {
       this.changeImage();
@@ -35,16 +35,22 @@ export default class Instruction {
   changeImage() {
     this.backgroundImage.src = this.imagePaths[this.currentImageIndex];
     if (this.currentImageIndex == 0) {
-      soundManager.play('boom');
+      soundManager.play('wind');
+      setTimeout(() => {
+        soundManager.play('breath');
+      }, 500);
     } else if(this.currentImageIndex == 1){
-      soundManager.play('scared');
+      soundManager.play('down');
+      setTimeout(() => {
+        soundManager.play('yell');
+      }, 500);
     }
     this.currentImageIndex = (this.currentImageIndex + 1) % this.imagePaths.length;
     if (this.currentImageIndex == 0) {
       clearInterval(this.timerId);
-      // setTimeout(() => {
-      //   this.game.switchScene(new this.game.startup(this.game));
-      // }, 2000);
+      setTimeout(() => {
+        this.game.switchScene(new this.game.startup(this.game));
+      }, 2000);
     }
   }
   draw() {
