@@ -1,5 +1,8 @@
 import Episode from './scene/episode.js';
 import Startup from './scene/startup.js';
+import Settings from './scene/settings.js';
+import Instruction from './scene/instruction.js';
+import Tutorial from './scene/tutorial.js';
 export default class Game {
   constructor() {
     this.initSettings();
@@ -7,7 +10,10 @@ export default class Game {
     this.context = canvas.getContext('2d');
     this.episode = Episode;
     this.startup = Startup;
-    this.currentScene = new this.episode(this);
+    this.tutorial = Tutorial;
+    this.settings = Settings;
+    this.instruction = Instruction;
+    this.currentScene = new this.tutorial(this);
     canvas.addEventListener('touchstart', (e) => {
       this.currentScene.touchHandler(e);
     });
@@ -50,7 +56,12 @@ export default class Game {
   loop() {
     // 清除整个画布
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.currentScene.draw();
+    if (this.currentScene instanceof Tutorial) {
+      this.currentScene.draw();
+      this.currentScene.update();
+    }else{
+      this.currentScene.draw();
+    }
     requestAnimationFrame(this.boundLoop);
   }
   // 切换页面方法
