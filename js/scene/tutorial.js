@@ -37,12 +37,20 @@ export default class Scene1 {
       toRight: false, // 是否向右跳
     };
     // 木板集合
-    this.boards = [{
+    this.boardsLeft = [{
         x: this.canvas.width / 2 - 80,
         y: this.canvas.height - 500,
         width: 10,
-        height: 150
+        height: 200
       },
+      {
+        x: this.canvas.width / 2 - 100,
+        y: this.canvas.height - 800,
+        width: 10,
+        height: 200
+      },
+    ];
+    this.boardsRight = [
       {
         x: this.canvas.width / 2 + 80,
         y: this.canvas.height - 350,
@@ -54,8 +62,14 @@ export default class Scene1 {
         y: this.canvas.height - 600,
         width: 10,
         height: 180
-      }
-    ];
+      },
+      {
+        x: this.canvas.width / 2 + 60,
+        y: this.canvas.height - 900,
+        width: 10,
+        height: 150
+      }]
+    this.boards = this.boardsLeft.concat(this.boardsRight)
     // 木板图片
     this.ivyImage = new Image();
     this.ivyImage.src = 'image/ivy.png'
@@ -117,9 +131,18 @@ export default class Scene1 {
     if (this.backgroundImage.complete) {
       this.context.drawImage(this.backgroundImage, 0, 0 + groundY, this.canvas.width, this.canvas.height);
     }
-    if (this.backgroundMirrorImage.complete) {
-      this.context.drawImage(this.backgroundMirrorImage, 0, -this.canvas.height + groundY, this.canvas.width, this.canvas.height);
+    let count = Math.floor(groundY / this.canvas.height) + 1;
+    if (count >= 1) {
+      if (this.backgroundMirrorImage.complete) {
+        this.context.drawImage(this.backgroundMirrorImage, 0, -this.canvas.height * (count - 1) + groundY, this.canvas.width, this.canvas.height);
+      }
+      if (this.backgroundMirrorImage.complete) {
+        this.context.drawImage(this.backgroundMirrorImage, 0, -this.canvas.height * count + groundY, this.canvas.width, this.canvas.height);
+      }
     }
+    // 增加黑色遮罩
+    this.context.fillStyle = `#ffffff66`;
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height + groundY);
     if (this.groundImage.complete) {
       this.context.drawImage(this.groundImage, 0, this.canvas.height - 200 + groundY, this.canvas.width, 200);
     }
@@ -133,6 +156,12 @@ export default class Scene1 {
   // 绘制忍者
   drawNinja() {
     let ninjaImg;
+    let groundY = 0;
+    if (this.ninja.y < this.canvas.height - 270) {
+      groundY = this.canvas.height - 270 - this.ninja.y
+    } else {
+      groundY = 0;
+    }
     if (this.ninja.isGround) {
       ninjaImg = this.ninjaImages[this.currentNinjaFrame]
       if (ninjaImg.complete) {
@@ -148,7 +177,7 @@ export default class Scene1 {
         ninjaImg = this.ninjaRightImages[3];
       }
       if (ninjaImg.complete) {
-        this.context.drawImage(ninjaImg, this.ninja.x, this.ninja.y)
+        this.context.drawImage(ninjaImg, this.ninja.x, this.ninja.y + groundY)
       }
     }
     if (this.ninja.toLeft) {
@@ -160,7 +189,7 @@ export default class Scene1 {
         ninjaImg = this.ninjaLeftImages[3];
       }
       if (ninjaImg.complete) {
-        this.context.drawImage(ninjaImg, this.ninja.x, this.ninja.y)
+        this.context.drawImage(ninjaImg, this.ninja.x, this.ninja.y + groundY)
       }
     }
   }
@@ -181,12 +210,6 @@ export default class Scene1 {
       if (this.currentNinjaRightFrame >= 3) {
         this.currentNinjaRightFrame = 3
       }
-      let groundY = 0;
-      if (this.ninja.y < this.canvas.height - 270) {
-        groundY = this.canvas.height - 270 - this.ninja.y
-      } else {
-        groundY = 0;
-      }
       // 抓到木板执行逻辑
       if (!this.isBoardCaught && this.ninja.stopPoint == 0) {
         // 计算水平速度的变化
@@ -199,7 +222,7 @@ export default class Scene1 {
         this.ninja.fly = true;
       } else {
         this.ninja.stopPoint = this.ninja.stopPoint - 0.1
-        if (this.ninja.stopPoint + groundY > -0.1) {
+        if (this.ninja.stopPoint > -0.1) {
           this.ninja.y += 0.1;
           this.ninja.fly = false;
         } else {
@@ -210,12 +233,12 @@ export default class Scene1 {
         }
       }
       // 是否抓住木板
-      for (const board of this.boards.slice(1)) {
+      for (const board of this.boardsRight) {
         if (
           this.ninja.x + 73 <= board.x + board.width &&
           this.ninja.x + 73 >= board.x &&
-          this.ninja.y + 60 <= board.y + board.height + groundY &&
-          this.ninja.y + 60 >= board.y + groundY
+          this.ninja.y + 50 <= board.y + board.height &&
+          this.ninja.y + 50 >= board.y
         ) {
           this.ninja.stopPoint = board.y + board.height - 20 - this.ninja.y
           this.isBoardCaught = true;
@@ -241,12 +264,6 @@ export default class Scene1 {
       if (this.currentNinjaLeftFrame >= 3) {
         this.currentNinjaLeftFrame = 3
       }
-      let groundY = 0;
-      if (this.ninja.y < this.canvas.height - 270) {
-        groundY = this.canvas.height - 270 - this.ninja.y
-      } else {
-        groundY = 0;
-      }
       // 抓到木板执行逻辑
       if (!this.isBoardCaught && this.ninja.stopPoint == 0) {
         // 计算水平速度的变化
@@ -259,7 +276,7 @@ export default class Scene1 {
         this.ninja.fly = true;
       } else {
         this.ninja.stopPoint = this.ninja.stopPoint - 0.1
-        if (this.ninja.stopPoint + groundY > -0.1) {
+        if (this.ninja.stopPoint > -0.1) {
           this.ninja.y += 0.1;
           this.ninja.fly = false;
         } else {
@@ -270,12 +287,12 @@ export default class Scene1 {
         }
       }
       // 是否抓住木板
-      for (const board of this.boards.slice(0, 1)) {
+      for (const board of this.boardsLeft) {
         if (
           this.ninja.x + 23 >= board.x &&
           this.ninja.x + 23 <= board.x + board.width &&
-          this.ninja.y + 50 >= board.y + groundY &&
-          this.ninja.y + 50 <= board.y + board.height + groundY
+          this.ninja.y + 50 >= board.y &&
+          this.ninja.y + 50 <= board.y + board.height
         ) {
           this.ninja.stopPoint = board.y + board.height - 20 - this.ninja.y
           this.isBoardCaught = true;
@@ -368,7 +385,6 @@ export default class Scene1 {
     if (this.isGameOver || this.ninja.fly) {
       return;
     }
-    this.clearLongPressTimer();
   }
   // 本局触摸结束事件
   touchEndHandler(e) {
@@ -382,7 +398,6 @@ export default class Scene1 {
     this.isBoardCaught = false;
     this.isJumpDown = false;
     this.ninja.stopPoint = 0;
-    this.clearLongPressTimer();
     // 长按情况下，根据蓄力时间设置跳跃高度和速度
     let pressDuration = Date.now() - this.touchStartTime;
     // 设置一个极限值
@@ -407,6 +422,7 @@ export default class Scene1 {
     }
     this.isShortPress = false;
     this.isLongPress = false;
+    this.clearLongPressTimer();
   }
   // 开始记录长按计时
   startLongPressTimer() {
@@ -433,7 +449,7 @@ export default class Scene1 {
       velocityY: 0, // 垂直速度
       gravity: 0.4, // 重力加速度
       fly: false, // 空中飞行状态
-      default: false, // 开局初始状态
+      default: true, // 开局初始状态
       isGround: true, // 是否在地面
       toLeft: false, // 是否向左跳
       toRight: false, // 是否向右跳
