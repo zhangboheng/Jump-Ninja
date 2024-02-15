@@ -18,8 +18,13 @@ export default class Scene1 {
     this.backgroundMirrorImage.src = 'image/backgroundmirror.jpg'
     // 创建返回按钮
     this.backButton = createBackButton(this.context, 10, menuButtonInfo.top, 'image/reply.png', () => {
-      this.game.switchScene(new this.game.startup(this.game));
+      this.game.switchScene(new this.game.choose(this.game));
     });
+    // 分数前图标
+    this.scoreImage = new Image();
+    this.scoreImage.src = 'image/uparrow.png'
+    // 初始化分数
+    this.score = 0;
     this.groundImage = new Image();
     this.groundImage.src = 'image/yard.jpg';
     // 添加忍者对象
@@ -35,44 +40,36 @@ export default class Scene1 {
       isGround: true, // 是否在地面
       toLeft: false, // 是否向左跳
       toRight: false, // 是否向右跳
+      downRank: 1, //下滑系数
     };
     // 木板集合
-    this.boardsLeft = [{
-        x: this.canvas.width / 2 - 80,
-        y: this.canvas.height - 500,
-        width: 10,
-        height: 200
-      },
-      {
-        x: this.canvas.width / 2 - 100,
-        y: this.canvas.height - 800,
-        width: 10,
-        height: 200
-      },
+    this.boardsLeft = [
+      {x: this.canvas.width / 2 - 80, y: this.canvas.height - 500, width: 11, height: 200, type: 'wood', smooth: 1},
+      {x: this.canvas.width / 2 - 100, y: this.canvas.height - 800, width: 9, height: 120, type: 'wood', smooth: 1},
+      {x: this.canvas.width / 2 - 60, y: this.canvas.height - 1100, width: 8, height: 80, type: 'wood', smooth: 1},
+      {x: this.canvas.width / 2 - 120, y: this.canvas.height - 1600, width: 13, height: 150, type: 'ice', smooth: 6},
+      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 2000, width: 12, height: 250, type: 'metal', smooth: 0}
     ];
     this.boardsRight = [
-      {
-        x: this.canvas.width / 2 + 80,
-        y: this.canvas.height - 350,
-        width: 10,
-        height: 100
-      },
-      {
-        x: this.canvas.width / 2 + 90,
-        y: this.canvas.height - 600,
-        width: 10,
-        height: 180
-      },
-      {
-        x: this.canvas.width / 2 + 60,
-        y: this.canvas.height - 900,
-        width: 10,
-        height: 150
-      }]
+      {x: this.canvas.width / 2 + 80, y: this.canvas.height - 350, width: 9, height: 100, type: 'wood', smooth: 1},
+      {x: this.canvas.width / 2 + 90, y: this.canvas.height - 600, width: 12, height: 180, type: 'ice', smooth: 6},
+      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 900, width: 13, height: 150, type: 'wood', smooth: 1},
+      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 1300, width: 12, height: 90, type: 'wood', smooth: 1},
+      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 1700, width: 10, height: 220, type: 'wood', smooth: 1}
+    ]
     this.boards = this.boardsLeft.concat(this.boardsRight)
     // 木板图片
     this.ivyImage = new Image();
-    this.ivyImage.src = 'image/ivy.png'
+    this.ivyImage.src = 'image/ivy.png';
+    // 冰棒图片
+    this.iceImage = new Image();
+    this.iceImage.src = 'image/ice.png';
+    // 钢铁图片
+    this.metalImage = new Image();
+    this.metalImage.src = 'image/endflag.png';
+    // 云朵图片
+    this.cloudImage = new Image();
+    this.cloudImage.src = 'image/cloud.png';
     // 在地面上角色图片集合
     this.ninjaImages = [];
     for (let i = 0; i <= 4; i++) {
@@ -113,7 +110,6 @@ export default class Scene1 {
     this.touchStartTime = 0; // 记录触摸开始时间戳
     // 添加触摸事件监听
     wx.onTouchStart(this.touchStartHandler.bind(this));
-    wx.onTouchMove(this.touchMoveHandler.bind(this));
     wx.onTouchEnd(this.touchEndHandler.bind(this));
     // 游戏结束判断标准
     this.isGameOver = false;
@@ -152,6 +148,31 @@ export default class Scene1 {
     if (this.backButton.image.complete) {
       this.context.drawImage(this.backButton.image, this.backButton.x, this.backButton.y);
     }
+  }
+  // 绘制分数
+  drawScore() {
+    const iconSize = 32; // 图标大小
+    const iconPadding = 10; // 图标与分数之间的间距
+    // 计算分数文本的宽度
+    this.context.font = '24px Arial'; // 确保设置的字体与绘制时相同
+    const textWidth = this.context.measureText(this.score).width;
+    // 计算总宽度（图标宽度 + 间距 + 文本宽度）
+    const totalWidth = iconSize + iconPadding + textWidth;
+    // 计算起始 x 坐标，使图标和分数组合居中
+    const startX = (this.canvas.width - totalWidth) / 2;
+    const iconX = startX;
+    const scoreX = iconX + iconSize + iconPadding;
+    const iconY = menuButtonInfo.top; // 图标的y坐标
+    const scoreY = menuButtonInfo.top + 20; // 分数的y坐标
+    // 绘制图标
+    if (this.scoreImage.complete) {
+      this.context.drawImage(this.scoreImage, iconX, iconY, iconSize, iconSize);
+    }
+    // 绘制分数
+    this.context.fillStyle = 'black';
+    this.context.textAlign = 'left'; // 文本左对齐
+    this.context.textBaseline = 'middle';
+    this.context.fillText(this.score, scoreX, scoreY);
   }
   // 绘制忍者
   drawNinja() {
@@ -221,9 +242,9 @@ export default class Scene1 {
         this.ninja.velocityY -= this.ninja.gravity;
         this.ninja.fly = true;
       } else {
-        this.ninja.stopPoint = this.ninja.stopPoint - 0.1
+        this.ninja.stopPoint = this.ninja.stopPoint - 0.1 * this.ninja.downRank
         if (this.ninja.stopPoint > -0.1) {
-          this.ninja.y += 0.1;
+          this.ninja.y += 0.1 * this.ninja.downRank;
           this.ninja.fly = false;
         } else {
           this.isBoardCaught = false;
@@ -242,8 +263,13 @@ export default class Scene1 {
         ) {
           this.ninja.stopPoint = board.y + board.height - 20 - this.ninja.y
           this.isBoardCaught = true;
+          this.ninja.downRank = board.smooth;
           this.ninja.velocityX = 0;
           this.ninja.velocityY = 0;
+          let getIndex = this.boardsRight.indexOf(board);
+          if (this.score < 2 * (getIndex + 1) - 1){
+            this.score = 2 * (getIndex + 1) - 1
+          }
           break;
         }
       }
@@ -275,9 +301,9 @@ export default class Scene1 {
         this.ninja.velocityY -= this.ninja.gravity;
         this.ninja.fly = true;
       } else {
-        this.ninja.stopPoint = this.ninja.stopPoint - 0.1
+        this.ninja.stopPoint = this.ninja.stopPoint - 0.1 * this.ninja.downRank
         if (this.ninja.stopPoint > -0.1) {
-          this.ninja.y += 0.1;
+          this.ninja.y += 0.1 * this.ninja.downRank;
           this.ninja.fly = false;
         } else {
           this.isBoardCaught = false;
@@ -296,8 +322,13 @@ export default class Scene1 {
         ) {
           this.ninja.stopPoint = board.y + board.height - 20 - this.ninja.y
           this.isBoardCaught = true;
+          this.ninja.downRank = board.smooth;
           this.ninja.velocityX = 0;
           this.ninja.velocityY = 0;
+          let getIndex = this.boardsLeft.indexOf(board);
+          if (this.score < 2 * (getIndex + 1)){
+            this.score = 2 * (getIndex + 1)
+          }
           break;
         }
       }
@@ -310,6 +341,10 @@ export default class Scene1 {
         this.isJumpDown = true;
       }
     }
+    // 判断是否到达终点
+    if (this.ninja.downRank == 0){
+      this.isGameOver = true;
+    }
   }
   // 绘制木板
   drawBoard() {
@@ -320,7 +355,30 @@ export default class Scene1 {
       groundY = 0;
     }
     for (const board of this.boards) {
-      this.context.drawImage(this.ivyImage, board.x, board.y + groundY, board.width, board.height);
+      if (board.type == 'wood') {
+        this.context.drawImage(this.ivyImage, board.x, board.y + groundY, board.width, board.height);
+      }
+      if (board.type == 'ice') {
+        this.context.drawImage(this.iceImage, board.x, board.y + groundY, board.width, board.height);
+      }
+      if (board.type == 'metal') {
+        this.context.drawImage(this.metalImage, board.x, board.y + groundY, board.width, board.height);
+      }
+    }
+  }
+  // 绘制云朵
+  drawCloud() {
+    let groundY = 0;
+    if (this.ninja.y < this.canvas.height - 270) {
+      groundY = this.canvas.height - 270 - this.ninja.y
+    } else {
+      groundY = 0;
+    }
+    if (this.cloudImage.complete) {
+      const cloudSpeed = 1; // 云朵的移动速度
+      const cloudOffset = (Date.now() / 1000) * cloudSpeed; // 根据时间计算云朵的偏移量
+      const cloudX = cloudOffset % this.canvas.width; // 根据偏移量计算云朵的当前 X 坐标
+      this.context.drawImage(this.cloudImage, cloudX, 0 + groundY, this.cloudImage.width, this.cloudImage.height);
     }
   }
   draw() {
@@ -328,17 +386,26 @@ export default class Scene1 {
     this.drawBackground();
     // 绘制返回按钮
     this.drawBack();
+    // 绘制分数
+    this.drawScore();
     // 绘制忍者
     this.drawNinja();
     // 绘制木板
     this.drawBoard();
+    // 绘制云朵
+    this.drawCloud();
   }
   update() {
     if (!this.isGameOver) {
       this.updateNinja();
     }else{
       this.context.font = '16px Arial';
-      this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2);
+      if (this.ninja.downRank == 0) {
+        this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2 + 40);
+        this.buttonNextInfo = drawIconButton(this.context, "前往下关", this.canvas.width / 2, this.canvas.height / 2 + 110);
+      } else {
+        this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2);
+      }
     }
   }
   // 通用点击事件
@@ -367,7 +434,7 @@ export default class Scene1 {
     if (this.isRestart) {
       return;
     }
-    if (this.isGameOver || this.ninja.fly) {
+    if (this.isGameOver) {
       return;
     }
     const touch = e.touches[0];
@@ -376,15 +443,6 @@ export default class Scene1 {
     this.touchStartTime = Date.now();
     // 处理触摸开始事件
     this.startLongPressTimer();
-  }
-  // 本局触摸移动事件
-  touchMoveHandler(e) {
-    if (this.isRestart) {
-      return;
-    }
-    if (this.isGameOver || this.ninja.fly) {
-      return;
-    }
   }
   // 本局触摸结束事件
   touchEndHandler(e) {
@@ -395,9 +453,6 @@ export default class Scene1 {
     if (this.isGameOver || this.ninja.fly) {
       return;
     }
-    this.isBoardCaught = false;
-    this.isJumpDown = false;
-    this.ninja.stopPoint = 0;
     // 长按情况下，根据蓄力时间设置跳跃高度和速度
     let pressDuration = Date.now() - this.touchStartTime;
     // 设置一个极限值
@@ -422,6 +477,9 @@ export default class Scene1 {
     }
     this.isShortPress = false;
     this.isLongPress = false;
+    this.isBoardCaught = false;
+    this.isJumpDown = false;
+    this.ninja.stopPoint = 0;
     this.clearLongPressTimer();
   }
   // 开始记录长按计时
@@ -441,6 +499,7 @@ export default class Scene1 {
     clearTimeout(this.longPressTimer);
   }
   resetGame(){
+    this.score = 0;
     this.ninja = {
       x: this.canvas.width / 2 - 46.5, // 初始 x 位置
       y: this.canvas.height - 270, // 初始 y 位置
@@ -453,6 +512,7 @@ export default class Scene1 {
       isGround: true, // 是否在地面
       toLeft: false, // 是否向左跳
       toRight: false, // 是否向右跳
+      downRank: 1, //下滑系数
     };
     this.currentNinjaFrame = 0;
     this.currentNinjaRightFrame = 0;

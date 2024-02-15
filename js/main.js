@@ -1,5 +1,6 @@
 import Episode from './scene/episode.js';
 import Startup from './scene/startup.js';
+import Choose from './scene/choose.js';
 import Settings from './scene/settings.js';
 import Instruction from './scene/instruction.js';
 import Tutorial from './scene/tutorial.js';
@@ -10,10 +11,11 @@ export default class Game {
     this.context = canvas.getContext('2d');
     this.episode = Episode;
     this.startup = Startup;
+    this.choose = Choose;
     this.tutorial = Tutorial;
     this.settings = Settings;
     this.instruction = Instruction;
-    this.currentScene = new this.tutorial(this);
+    this.currentScene = new this.startup(this);
     canvas.addEventListener('touchstart', (e) => {
       this.currentScene.touchHandler(e);
     });
