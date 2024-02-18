@@ -21,10 +21,10 @@ export default class Instruction {
     this.backButton = createBackButton(this.context, 10, menuButtonInfo.top, 'image/reply.png', () => {
       this.game.switchScene(new this.game.startup(this.game));
     });
-    // 绘制逃出监牢封面
+    // 绘制训练封面
     this.rectImage = new Image();
     this.rectImage.src = 'image/gameone.jpg';
-    // 绘制逃出乐园封面
+    // 绘制出发封面
     this.rectImageTwo = new Image();
     this.rectImageTwo.src = 'image/gametwo.jpg';
   }
@@ -170,15 +170,15 @@ export default class Instruction {
     this.rectX = (this.canvas.width - this.rectWidth) / 2; // 矩形的X坐标
     this.rectY = this.backButton.y + this.backButton.height + rectMargin; // 矩形的Y坐标
     this.rectHeight = 190; // 矩形的高度
-    // 检查触摸点是否在逃出监牢内
+    // 检查触摸点是否在训练内
     if (touchX >= this.rectX && touchX <= this.rectX + this.rectWidth &&
       touchY >= this.rectY && touchY <= this.rectY + this.rectHeight) {
-      this.game.switchScene(new this.game.tutorial(this.game));
+      this.game.switchScene(new this.game.trailfirst(this.game));
     }
-    // 检查触摸点是否在逃出乐园内
+    // 检查触摸点是否在出发内
     if (touchX >= this.rectX && touchX <= this.rectX + this.rectWidth &&
       touchY >= this.rectY + 200 && touchY <= this.rectY + 200 + this.rectHeight) {
-      this.game.switchScene(new this.game.infinite(this.game));
+      this.game.switchScene(new this.game.tutorial(this.game));
     }
   }
   // 页面销毁机制

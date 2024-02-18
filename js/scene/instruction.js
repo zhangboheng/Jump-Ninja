@@ -177,7 +177,7 @@ export default class Settings {
       this.context.fillStyle = '#000000';
       this.context.textAlign = 'right';
       const textY = tabContentY + 15 + textHeight * 0 + fontSize / 2;
-      const intro = ['操作：点击屏幕', '功能：可以实现向上跳跃']
+      const intro = ['操作：点击屏幕长按后松开', '功能：可以实现向上跳跃']
       for(let i = 0; i < intro.length; i++) {
         this.context.fillText(intro[i], tabX + tabWidth - 10, textY + i * 20);
       }

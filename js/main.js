@@ -3,6 +3,7 @@ import Startup from './scene/startup.js';
 import Choose from './scene/choose.js';
 import Settings from './scene/settings.js';
 import Instruction from './scene/instruction.js';
+import TrailFirst from './scene/trailFirst.js';
 import Tutorial from './scene/tutorial.js';
 export default class Game {
   constructor() {
@@ -12,6 +13,7 @@ export default class Game {
     this.episode = Episode;
     this.startup = Startup;
     this.choose = Choose;
+    this.trailfirst = TrailFirst;
     this.tutorial = Tutorial;
     this.settings = Settings;
     this.instruction = Instruction;
@@ -58,7 +60,10 @@ export default class Game {
   loop() {
     // 清除整个画布
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    if (this.currentScene instanceof Tutorial) {
+    if(this.currentScene instanceof Tutorial) {
+      this.currentScene.draw();
+      this.currentScene.update();
+    }else if(this.currentScene instanceof TrailFirst) {
       this.currentScene.draw();
       this.currentScene.update();
     }else{
