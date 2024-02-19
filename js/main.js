@@ -4,6 +4,9 @@ import Choose from './scene/choose.js';
 import Settings from './scene/settings.js';
 import Instruction from './scene/instruction.js';
 import TrailFirst from './scene/trailFirst.js';
+import TrailSecond from './scene/trailSecond.js';
+import TrailThird from './scene/trailThird.js';
+import TrailFourth from './scene/trailFourth.js';
 import Tutorial from './scene/tutorial.js';
 export default class Game {
   constructor() {
@@ -14,6 +17,9 @@ export default class Game {
     this.startup = Startup;
     this.choose = Choose;
     this.trailfirst = TrailFirst;
+    this.trailsecond = TrailSecond;
+    this.trailthird = TrailThird;
+    this.trailfourth = TrailFourth;
     this.tutorial = Tutorial;
     this.settings = Settings;
     this.instruction = Instruction;
@@ -64,6 +70,15 @@ export default class Game {
       this.currentScene.draw();
       this.currentScene.update();
     }else if(this.currentScene instanceof TrailFirst) {
+      this.currentScene.draw();
+      this.currentScene.update();
+    }else if(this.currentScene instanceof TrailSecond) {
+      this.currentScene.draw();
+      this.currentScene.update();
+    }else if(this.currentScene instanceof TrailThird) {
+      this.currentScene.draw();
+      this.currentScene.update();
+    }else if(this.currentScene instanceof TrailFourth) {
       this.currentScene.draw();
       this.currentScene.update();
     }else{

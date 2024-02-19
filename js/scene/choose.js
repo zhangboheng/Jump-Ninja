@@ -173,7 +173,16 @@ export default class Instruction {
     // 检查触摸点是否在训练内
     if (touchX >= this.rectX && touchX <= this.rectX + this.rectWidth &&
       touchY >= this.rectY && touchY <= this.rectY + this.rectHeight) {
-      this.game.switchScene(new this.game.trailfirst(this.game));
+      const getTrailGame = wx.getStorageSync('trailNumber')
+      if(getTrailGame == '') {
+        this.game.switchScene(new this.game.trailfirst(this.game));
+      }else if(getTrailGame + 1 == 2) {
+        this.game.switchScene(new this.game.trailsecond(this.game));
+      }else if(getTrailGame + 1 == 3) {
+        this.game.switchScene(new this.game.trailthird(this.game));
+      }else{
+        this.game.switchScene(new this.game.trailfourth(this.game));
+      }
     }
     // 检查触摸点是否在出发内
     if (touchX >= this.rectX && touchX <= this.rectX + this.rectWidth &&

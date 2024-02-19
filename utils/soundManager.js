@@ -5,7 +5,11 @@ class SoundManager {
       breath: new Audio('audio/chow.mp3'),
       wind: new Audio('audio/wind.mp3'),
       down: new Audio('audio/down.mp3'),
-      yell: new Audio('audio/yell.mp3')
+      yell: new Audio('audio/yell.mp3'),
+      jump: new Audio('audio/jump.mp3'),
+      crack: new Audio('audio/crack.mp3'),
+      win: new Audio('audio/gamewin.mp3'),
+      lose: new Audio('audio/gameover.mp3')
     };
     // 初始化音乐播放状态
     this.musicEnabled = this.getMusicState();

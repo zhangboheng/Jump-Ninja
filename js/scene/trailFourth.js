@@ -57,18 +57,46 @@ export default class Scene1 {
     };
     // 木板集合
     this.boardsLeft = [{
-      x: this.canvas.width / 2 - 80,
-      y: this.canvas.height - 550,
-      width: 11,
-      height: 150,
+      x: this.canvas.width / 2 - 60,
+      y: this.canvas.height - 650,
+      width: 6,
+      height: 250,
+      type: 'ice',
+      smooth: 8
+    },{
+      x: this.canvas.width / 2 - 100,
+      y: this.canvas.height - 700,
+      width: 12,
+      height: 60,
+      type: 'ice',
+      smooth: 8
+    },{
+      x: this.canvas.width / 2 - 110,
+      y: this.canvas.height - 600,
+      width: 12,
+      height: 60,
+      type: 'ice',
+      smooth: 8
+    },{
+      x: this.canvas.width / 2 - 125,
+      y: this.canvas.height - 480,
+      width: 12,
+      height: 60,
       type: 'wood',
       smooth: 0
     }];
     this.boardsRight = [{
       x: this.canvas.width / 2 + 80,
       y: this.canvas.height - 350,
-      width: 9,
+      width: 6,
       height: 100,
+      type: 'wood',
+      smooth: 1
+    },{
+      x: this.canvas.width / 2 + 100,
+      y: this.canvas.height - 700,
+      width: 10,
+      height: 150,
       type: 'wood',
       smooth: 1
     }]
@@ -76,6 +104,9 @@ export default class Scene1 {
     // 木板图片
     this.ivyImage = new Image();
     this.ivyImage.src = 'image/ivy.png';
+    // 冰棒图片
+    this.iceImage = new Image();
+    this.iceImage.src = 'image/ice.png';
     // 终点图片
     this.endImage = new Image();
     this.endImage.src = 'image/goal.png';
@@ -158,7 +189,7 @@ export default class Scene1 {
       groundY = 0;
     }
     if (this.endImage.complete) {
-      this.context.drawImage(this.endImage, this.canvas.width / 2 - 88, this.canvas.height - 550 - this.endImage.height + groundY, this.endImage.width, this.endImage.height);
+      this.context.drawImage(this.endImage, this.canvas.width / 2 - 135, this.canvas.height - 480 - this.endImage.height + groundY, this.endImage.width, this.endImage.height);
     }
   }
   // 绘制返回按钮
@@ -171,7 +202,7 @@ export default class Scene1 {
   drawMessageBox() {
     this.context.font = '16px Arial';
     if(this.displayMessageTime > 0) {
-      showBoxMessage(this.context, '试炼 - 01', this.canvas.width / 2, this.canvas.height / 2);
+      showBoxMessage(this.context, '试炼 - 04', this.canvas.width / 2, this.canvas.height / 2);
       setTimeout(() => {
         this.displayMessageTime--
       }, 500);
@@ -359,6 +390,9 @@ export default class Scene1 {
       if (board.type == 'wood') {
         this.context.drawImage(this.ivyImage, board.x, board.y + groundY, board.width, board.height);
       }
+      if (board.type == 'ice') {
+        this.context.drawImage(this.iceImage, board.x, board.y + groundY, board.width, board.height);
+      }
     }
   }
   draw() {
@@ -386,7 +420,7 @@ export default class Scene1 {
         }
         this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2 + 40);
         this.buttonNextInfo = drawIconButton(this.context, "前往下关", this.canvas.width / 2, this.canvas.height / 2 + 110);
-        wx.setStorageSync('trailNumber', 1)
+        wx.setStorageSync('trailNumber', 4)
       } else {
         if (this.failTipsImage.complete) {
           this.context.drawImage(this.failTipsImage, (this.canvas.width - this.failTipsImage.width) / 2, (this.canvas.height - this.failTipsImage.height) / 2 - this.failTipsImage.height / 2);
@@ -419,7 +453,7 @@ export default class Scene1 {
       if (touchX >= this.buttonNextInfo.x && touchX <= this.buttonNextInfo.x + this.buttonNextInfo.width &&
         touchY >= this.buttonNextInfo.y && touchY <= this.buttonNextInfo.y + this.buttonNextInfo.height) {
         if (this.ninja.downRank == 0){
-          this.game.switchScene(new this.game.trailsecond(this.game));
+          this.game.switchScene(new this.game.trailfifth(this.game));
         }else{
           wx.shareAppMessage({
             title: '小恐龙不要停！太难了吧',
@@ -546,6 +580,7 @@ export default class Scene1 {
     this.successTipsImage.src = '';
     this.failTipsImage.src = '';
     this.ivyImage.src = '';
+    this.iceImage.src = '';
     this.endImage.src = '';
     this.ninjaJumpImage.src = '';
     this.ninjaJumpMirrorImage.src = '';

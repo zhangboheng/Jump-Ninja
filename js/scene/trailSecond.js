@@ -58,16 +58,16 @@ export default class Scene1 {
     // 木板集合
     this.boardsLeft = [{
       x: this.canvas.width / 2 - 80,
-      y: this.canvas.height - 550,
-      width: 11,
-      height: 150,
+      y: this.canvas.height - 400,
+      width: 15,
+      height: 100,
       type: 'wood',
       smooth: 0
     }];
     this.boardsRight = [{
       x: this.canvas.width / 2 + 80,
-      y: this.canvas.height - 350,
-      width: 9,
+      y: this.canvas.height - 550,
+      width: 15,
       height: 100,
       type: 'wood',
       smooth: 1
@@ -158,7 +158,7 @@ export default class Scene1 {
       groundY = 0;
     }
     if (this.endImage.complete) {
-      this.context.drawImage(this.endImage, this.canvas.width / 2 - 88, this.canvas.height - 550 - this.endImage.height + groundY, this.endImage.width, this.endImage.height);
+      this.context.drawImage(this.endImage, this.canvas.width / 2 - 88, this.canvas.height - 400 - this.endImage.height + groundY, this.endImage.width, this.endImage.height);
     }
   }
   // 绘制返回按钮
@@ -171,7 +171,7 @@ export default class Scene1 {
   drawMessageBox() {
     this.context.font = '16px Arial';
     if(this.displayMessageTime > 0) {
-      showBoxMessage(this.context, '试炼 - 01', this.canvas.width / 2, this.canvas.height / 2);
+      showBoxMessage(this.context, '试炼 - 02', this.canvas.width / 2, this.canvas.height / 2);
       setTimeout(() => {
         this.displayMessageTime--
       }, 500);
@@ -386,7 +386,7 @@ export default class Scene1 {
         }
         this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2 + 40);
         this.buttonNextInfo = drawIconButton(this.context, "前往下关", this.canvas.width / 2, this.canvas.height / 2 + 110);
-        wx.setStorageSync('trailNumber', 1)
+        wx.setStorageSync('trailNumber', 2)
       } else {
         if (this.failTipsImage.complete) {
           this.context.drawImage(this.failTipsImage, (this.canvas.width - this.failTipsImage.width) / 2, (this.canvas.height - this.failTipsImage.height) / 2 - this.failTipsImage.height / 2);
@@ -419,7 +419,7 @@ export default class Scene1 {
       if (touchX >= this.buttonNextInfo.x && touchX <= this.buttonNextInfo.x + this.buttonNextInfo.width &&
         touchY >= this.buttonNextInfo.y && touchY <= this.buttonNextInfo.y + this.buttonNextInfo.height) {
         if (this.ninja.downRank == 0){
-          this.game.switchScene(new this.game.trailsecond(this.game));
+          this.game.switchScene(new this.game.trailthird(this.game));
         }else{
           wx.shareAppMessage({
             title: '小恐龙不要停！太难了吧',
