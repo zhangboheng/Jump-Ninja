@@ -182,8 +182,10 @@ export default class Instruction {
         this.game.switchScene(new this.game.trailthird(this.game));
       }else if(getTrailGame + 1 == 4) {
         this.game.switchScene(new this.game.trailfourth(this.game));
-      }else{
+      }else if(getTrailGame + 1 == 5) {
         this.game.switchScene(new this.game.trailfifth(this.game));
+      }else{
+        this.game.switchScene(new this.game.trailsixth(this.game));
       }
     }
     // 检查触摸点是否在出发内
