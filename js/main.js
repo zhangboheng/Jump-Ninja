@@ -7,6 +7,7 @@ import TrailFirst from './scene/trailFirst.js';
 import TrailSecond from './scene/trailSecond.js';
 import TrailThird from './scene/trailThird.js';
 import TrailFourth from './scene/trailFourth.js';
+import TrailFifth from './scene/trailFifth.js';
 import Tutorial from './scene/tutorial.js';
 export default class Game {
   constructor() {
@@ -20,10 +21,12 @@ export default class Game {
     this.trailsecond = TrailSecond;
     this.trailthird = TrailThird;
     this.trailfourth = TrailFourth;
+    this.trailfifth = TrailFifth;
     this.tutorial = Tutorial;
     this.settings = Settings;
     this.instruction = Instruction;
     this.currentScene = new this.startup(this);
+    this.instanceList = [Tutorial, TrailFirst, TrailSecond, TrailThird, TrailFourth, TrailFifth]
     canvas.addEventListener('touchstart', (e) => {
       this.currentScene.touchHandler(e);
     });
@@ -66,24 +69,8 @@ export default class Game {
   loop() {
     // 清除整个画布
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    if(this.currentScene instanceof Tutorial) {
-      this.currentScene.draw();
-      this.currentScene.update();
-    }else if(this.currentScene instanceof TrailFirst) {
-      this.currentScene.draw();
-      this.currentScene.update();
-    }else if(this.currentScene instanceof TrailSecond) {
-      this.currentScene.draw();
-      this.currentScene.update();
-    }else if(this.currentScene instanceof TrailThird) {
-      this.currentScene.draw();
-      this.currentScene.update();
-    }else if(this.currentScene instanceof TrailFourth) {
-      this.currentScene.draw();
-      this.currentScene.update();
-    }else{
-      this.currentScene.draw();
-    }
+    this.currentScene.draw();
+    this.instanceList.forEach(item=>this.currentScene instanceof item ? this.currentScene.update(): '')
     requestAnimationFrame(this.boundLoop);
   }
   // 切换页面方法
