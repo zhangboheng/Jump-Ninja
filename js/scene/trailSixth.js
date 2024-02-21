@@ -261,12 +261,12 @@ export default class Scene1 {
       this.showClockTimeCount = this.showClockTimeCount + 0.002
       if (this.showClockTimeCount > 2){
         this.boards = this.boards.map(board=>{
-          const processedBoard = { ...board }; // 创建一个副本，以免修改原始对象
+          const processedBoard = { ...board };
           processedBoard.clockLimit = 2;
           return processedBoard;
         });
         this.boardsRight = this.boardsRight.map(board=>{
-          const processedBoard = { ...board }; // 创建一个副本，以免修改原始对象
+          const processedBoard = { ...board };
           processedBoard.clockLimit = 2;
           return processedBoard;
         });

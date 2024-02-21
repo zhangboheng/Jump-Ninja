@@ -40,9 +40,6 @@ export default class Scene1 {
     // 加载失败图片
     this.failTipsImage = new Image();
     this.failTipsImage.src = 'image/gameovertips.png'
-    // 加载循环标志图片
-    this.cycleImage = new Image();
-    this.cycleImage.src = 'image/cycle.png'
     // 添加忍者对象
     this.ninja = {
       x: this.canvas.width / 2 - 46.5, // 初始 x 位置
@@ -58,64 +55,91 @@ export default class Scene1 {
       toRight: false, // 是否向右跳
       downRank: 1, //下滑系数
     };
-    // 是否显示循环
-    this.showCycle = false;
+    // 波动距离
+    this.waveRation = 0.01;
+    this.distanceLimit = 0;
     // 木板集合
     this.boardsLeft = [{
-      x: this.canvas.width / 2 - 90,
-      y: this.canvas.height - 650,
-      width: 12,
+      x: this.canvas.width / 2 - 100,
+      y: this.canvas.height - 500,
+      width: 16,
       height: 100,
-      type: 'ice',
-      smooth: 0,
+      type: 'wood',
+      smooth: 1,
+      showClock: true,
+      clockLimit: 2,
       isShow: true,
-      showCycle: false,
-    }, {
-      x: this.canvas.width / 2 - 60,
-      y: this.canvas.height - 800,
-      width: 12,
-      height: 250,
-      type: 'glass',
-      smooth: 6,
-      isShow: true,
-      showCycle: true,
-    }, {
-      x: this.canvas.width / 2 - 70,
-      y: this.canvas.height - 800,
-      width: 12,
-      height: 250,
-      type: 'glass',
-      smooth: 6,
-      isShow: true,
-      showCycle: true,
     }, {
       x: this.canvas.width / 2 - 80,
-      y: this.canvas.height - 800,
-      width: 12,
-      height: 380,
-      type: 'glass',
-      smooth: 6,
+      y: this.canvas.height - 950,
+      width: 20,
+      height: 100,
+      type: 'metal',
+      smooth: 0.01,
+      showClock: false,
+      clockLimit: 2,
       isShow: true,
-      showCycle: true,
     }];
     this.boardsRight = [{
-      x: this.canvas.width / 2 + 110,
+      x: this.canvas.width / 2 + 107,
       y: this.canvas.height - 500,
-      width: 15,
-      height: 120,
+      width: 16,
+      height: 100,
+      type: 'wood',
+      smooth: 1,
+      showClock: true,
+      clockLimit: 2,
+      isShow: true,
+    }, {
+      x: this.canvas.width / 2 + 90,
+      y: this.canvas.height - 650,
+      width: 10,
+      height: 100,
       type: 'glass',
       smooth: 6,
+      showClock: false,
+      clockLimit: 1,
       isShow: true,
-      showCycle: false,
     }, {
       x: this.canvas.width / 2 + 100,
       y: this.canvas.height - 700,
       width: 10,
-      height: 150,
+      height: 100,
+      type: 'glass',
+      smooth: 6,
+      showClock: false,
+      clockLimit: 1,
+      isShow: true,
+    }, {
+      x: this.canvas.width / 2 + 110,
+      y: this.canvas.height - 650,
+      width: 10,
+      height: 100,
+      type: 'metal',
+      smooth: 0.01,
+      showClock: false,
+      clockLimit: 1,
+      isShow: true,
+    }, {
+      x: this.canvas.width / 2 + 110,
+      y: this.canvas.height - 1200,
+      width: 10,
+      height: 200,
       type: 'wood',
       smooth: 1,
+      showClock: false,
+      clockLimit: 2,
       isShow: true,
-      showCycle: true,
+    }, {
+      x: this.canvas.width / 2 + 120,
+      y: this.canvas.height - 1100,
+      width: 20,
+      height: 100,
+      type: 'metal',
+      smooth: 0,
+      showClock: false,
+      clockLimit: 2,
+      isShow: true,
     }]
     this.boards = this.boardsLeft.concat(this.boardsRight)
     // 木板图片
@@ -124,9 +148,15 @@ export default class Scene1 {
     // 冰棒图片
     this.iceImage = new Image();
     this.iceImage.src = 'image/ice.png';
+    // 钢铁图片
+    this.metalImage = new Image();
+    this.metalImage.src = 'image/endflag.png';
     // 玻璃图片
     this.glassImage = new Image();
     this.glassImage.src = 'image/glass.png';
+    // 钟表图片
+    this.clockImage = new Image();
+    this.clockImage.src = 'image/clock.png';
     // 终点图片
     this.endImage = new Image();
     this.endImage.src = 'image/goal.png';
@@ -177,6 +207,12 @@ export default class Scene1 {
     this.buttonStartInfo = "";
     // 分享好友按钮
     this.buttonNextInfo = "";
+    // 是否显示钟表图标
+    this.showClock = false;
+    // 跟踪记录钟表显示位置
+    this.trackClockPosition = 0;
+    // 统计钟表图标出现的时间
+    this.showClockTimeCount = 0;
     // 跟踪忍者踩到的右位置
     this.rightTrack = "";
     // 跟踪忍者踩到的左位置
@@ -213,7 +249,7 @@ export default class Scene1 {
       groundY = 0;
     }
     if (this.endImage.complete) {
-      this.context.drawImage(this.endImage, this.canvas.width / 2 - 95, this.canvas.height - 650 - this.endImage.height + groundY, this.endImage.width, this.endImage.height);
+      this.context.drawImage(this.endImage, this.canvas.width / 2 + 125, this.canvas.height - 1100 - this.endImage.height + groundY, this.endImage.width, this.endImage.height);
     }
   }
   // 绘制返回按钮
@@ -226,23 +262,46 @@ export default class Scene1 {
   drawMessageBox() {
     this.context.font = '16px Arial';
     if (this.displayMessageTime > 0) {
-      showBoxMessage(this.context, '试炼 - 07', this.canvas.width / 2, this.canvas.height / 2);
+      showBoxMessage(this.context, '试炼 - 08', this.canvas.width / 2, this.canvas.height / 2);
       setTimeout(() => {
         this.displayMessageTime--
       }, 500);
     }
   }
-  // 绘制循环标志
-  drawCycleLogo() {
+  // 绘制时钟显示
+  drawClock() {
     let groundY = 0;
     if (this.ninja.y < this.canvas.height - 270) {
       groundY = this.canvas.height - 270 - this.ninja.y
     } else {
       groundY = 0;
     }
-    if (this.showCycle) {
-      if (this.cycleImage.complete) {
-        this.context.drawImage(this.cycleImage, this.canvas.width / 2, this.canvas.height - 700 + groundY, this.cycleImage.width, this.cycleImage.height);
+    if (this.showClock) {
+      if (this.clockImage.complete) {
+        this.context.drawImage(this.clockImage, this.canvas.width / 2 - this.clockImage.width / 2, this.trackClockPosition + groundY, this.clockImage.width, this.clockImage.height);
+      }
+    }
+  }
+  // 更新钟表计时
+  updateClock() {
+    if (this.showClock) {
+      this.showClockTimeCount = this.showClockTimeCount + 0.002
+      if (this.showClockTimeCount > 2) {
+        this.boards = this.boards.map(board => {
+          const processedBoard = {
+            ...board
+          };
+          processedBoard.clockLimit = 2;
+          return processedBoard;
+        });
+        this.boardsRight = this.boardsRight.map(board => {
+          const processedBoard = {
+            ...board
+          };
+          processedBoard.clockLimit = 2;
+          return processedBoard;
+        });
+        this.showClock = false;
       }
     }
   }
@@ -313,7 +372,7 @@ export default class Scene1 {
         this.ninja.y -= this.ninja.velocityY;
         this.ninja.velocityY -= this.ninja.gravity;
         this.ninja.fly = true;
-        this.showCycle = false;
+        this.showClock = false;
       } else {
         this.ninja.stopPoint = this.ninja.stopPoint - 0.1 * this.ninja.downRank
         if (this.ninja.stopPoint > -0.1) {
@@ -327,7 +386,7 @@ export default class Scene1 {
         }
       }
       // 是否抓住木板
-      for (const board of this.boardsRight.filter(item => item.isShow)) {
+      for (const board of this.boardsRight.filter(item => item.clockLimit >= 2 && item.isShow)) {
         if (
           this.ninja.x + 73 <= board.x + board.width &&
           this.ninja.x + 73 >= board.x &&
@@ -341,7 +400,10 @@ export default class Scene1 {
           this.ninja.velocityY = 0;
           this.rightTrack = board;
           this.ninja.fly = false;
-          this.showCycle = board.showCycle;
+          if (board.showClock) {
+            this.showClock = board.showClock;
+            this.trackClockPosition = board.y
+          }
           break;
         }
       }
@@ -374,7 +436,7 @@ export default class Scene1 {
         this.ninja.y -= this.ninja.velocityY;
         this.ninja.velocityY -= this.ninja.gravity;
         this.ninja.fly = true;
-        this.showCycle = false;
+        this.showClock = false;
       } else {
         this.ninja.stopPoint = this.ninja.stopPoint - 0.1 * this.ninja.downRank
         if (this.ninja.stopPoint > -0.1) {
@@ -388,7 +450,7 @@ export default class Scene1 {
         }
       }
       // 是否抓住木板
-      for (const board of this.boardsLeft.filter(item => item.isShow)) {
+      for (const board of this.boardsLeft) {
         if (
           this.ninja.x + 23 >= board.x &&
           this.ninja.x + 23 <= board.x + board.width &&
@@ -402,7 +464,10 @@ export default class Scene1 {
           this.ninja.velocityY = 0;
           this.leftTrack = board;
           this.ninja.fly = false;
-          this.showCycle = board.showCycle;
+          if (board.showClock) {
+            this.showClock = board.showClock;
+            this.trackClockPosition = board.y
+          }
           break;
         }
       }
@@ -432,12 +497,15 @@ export default class Scene1 {
     } else {
       groundY = 0;
     }
-    for (const board of this.boards.filter(item => item.isShow)) {
+    for (const board of this.boards.filter(item => item.clockLimit >= 2 && item.isShow)) {
       if (board.type == 'wood') {
         this.context.drawImage(this.ivyImage, board.x, board.y + groundY, board.width, board.height);
       }
       if (board.type == 'ice') {
         this.context.drawImage(this.iceImage, board.x, board.y + groundY, board.width, board.height);
+      }
+      if (board.type == 'metal') {
+        this.context.drawImage(this.metalImage, board.x, board.y + groundY, board.width, board.height);
       }
       if (board.type == 'glass') {
         this.context.drawImage(this.glassImage, board.x, board.y + groundY, board.width, board.height);
@@ -446,13 +514,29 @@ export default class Scene1 {
   }
   // 更新木板
   updateBoard() {
+    if (this.distanceLimit > -0.3) {
+      this.waveRation -= 0.0001;
+      this.distanceLimit = this.waveRation;
+      this.boardsRight = this.boardsRight.map((item, index) => {
+        if (index == 4) {
+          const processedBoard = {
+            ...item
+          };
+          processedBoard.y = processedBoard.y - this.distanceLimit;
+          return processedBoard;
+        } else {
+          return item;
+        }
+      });
+      this.boards = this.boardsLeft.concat(this.boardsRight);
+    }
     //更新踩到木板的位置
     if (this.ninja.fly) {
       this.boardsLeft = this.boardsLeft.map(item => {
         if (item == this.leftTrack && item.type == 'glass') {
           const processedBoard = {
             ...item
-          }; // 创建一个副本，以免修改原始对象
+          };
           processedBoard.isShow = false;
           return processedBoard;
         } else {
@@ -463,7 +547,7 @@ export default class Scene1 {
         if (item == this.rightTrack && item.type == 'glass') {
           const processedBoard = {
             ...item
-          }; // 创建一个副本，以免修改原始对象
+          };
           processedBoard.isShow = false;
           return processedBoard;
         } else {
@@ -486,12 +570,13 @@ export default class Scene1 {
     this.drawGoal();
     // 绘制开局提示消息
     this.drawMessageBox();
-    // 绘制循环标志
-    this.drawCycleLogo()
+    // 绘制时钟显示
+    this.drawClock();
   }
   update() {
     if (!this.isGameOver) {
       this.updateNinja();
+      this.updateClock();
       this.updateBoard();
     } else {
       this.context.font = '16px Arial';
@@ -501,7 +586,7 @@ export default class Scene1 {
         }
         this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2 + 40);
         this.buttonNextInfo = drawIconButton(this.context, "前往下关", this.canvas.width / 2, this.canvas.height / 2 + 110);
-        wx.setStorageSync('trailNumber', 7)
+        wx.setStorageSync('trailNumber', 6)
       } else {
         if (this.failTipsImage.complete) {
           this.context.drawImage(this.failTipsImage, (this.canvas.width - this.failTipsImage.width) / 2, (this.canvas.height - this.failTipsImage.height) / 2 - this.failTipsImage.height / 2);
@@ -534,7 +619,7 @@ export default class Scene1 {
       if (touchX >= this.buttonNextInfo.x && touchX <= this.buttonNextInfo.x + this.buttonNextInfo.width &&
         touchY >= this.buttonNextInfo.y && touchY <= this.buttonNextInfo.y + this.buttonNextInfo.height) {
         if (this.ninja.downRank == 0) {
-          this.game.switchScene(new this.game.traileighth(this.game));
+          this.game.switchScene(new this.game.trailnineth(this.game));
         } else {
           wx.shareAppMessage({
             title: '小恐龙不要停！太难了吧',
@@ -629,64 +714,91 @@ export default class Scene1 {
       toRight: false, // 是否向右跳
       downRank: 1, //下滑系数
     };
-    // 是否显示循环
-    this.showCycle = false;
+    // 波动距离
+    this.waveRation = 0.01;
+    this.distanceLimit = 0;
     // 木板集合
     this.boardsLeft = [{
-      x: this.canvas.width / 2 - 90,
-      y: this.canvas.height - 650,
-      width: 12,
+      x: this.canvas.width / 2 - 100,
+      y: this.canvas.height - 500,
+      width: 16,
       height: 100,
-      type: 'ice',
-      smooth: 0,
+      type: 'wood',
+      smooth: 1,
+      showClock: true,
+      clockLimit: 2,
       isShow: true,
-      showCycle: false,
-    }, {
-      x: this.canvas.width / 2 - 60,
-      y: this.canvas.height - 800,
-      width: 12,
-      height: 250,
-      type: 'glass',
-      smooth: 6,
-      isShow: true,
-      showCycle: true,
-    }, {
-      x: this.canvas.width / 2 - 70,
-      y: this.canvas.height - 800,
-      width: 12,
-      height: 250,
-      type: 'glass',
-      smooth: 6,
-      isShow: true,
-      showCycle: true,
     }, {
       x: this.canvas.width / 2 - 80,
-      y: this.canvas.height - 800,
-      width: 12,
-      height: 380,
-      type: 'glass',
-      smooth: 6,
+      y: this.canvas.height - 950,
+      width: 20,
+      height: 100,
+      type: 'metal',
+      smooth: 0.01,
+      showClock: false,
+      clockLimit: 2,
       isShow: true,
-      showCycle: true,
     }];
     this.boardsRight = [{
-      x: this.canvas.width / 2 + 110,
+      x: this.canvas.width / 2 + 107,
       y: this.canvas.height - 500,
-      width: 15,
-      height: 120,
+      width: 16,
+      height: 100,
+      type: 'wood',
+      smooth: 1,
+      showClock: true,
+      clockLimit: 2,
+      isShow: true,
+    }, {
+      x: this.canvas.width / 2 + 90,
+      y: this.canvas.height - 650,
+      width: 10,
+      height: 100,
       type: 'glass',
       smooth: 6,
+      showClock: false,
+      clockLimit: 1,
       isShow: true,
-      showCycle: false,
     }, {
       x: this.canvas.width / 2 + 100,
       y: this.canvas.height - 700,
       width: 10,
-      height: 150,
+      height: 100,
+      type: 'glass',
+      smooth: 6,
+      showClock: false,
+      clockLimit: 1,
+      isShow: true,
+    }, {
+      x: this.canvas.width / 2 + 110,
+      y: this.canvas.height - 650,
+      width: 10,
+      height: 100,
+      type: 'metal',
+      smooth: 0.01,
+      showClock: false,
+      clockLimit: 1,
+      isShow: true,
+    }, {
+      x: this.canvas.width / 2 + 110,
+      y: this.canvas.height - 1200,
+      width: 10,
+      height: 200,
       type: 'wood',
       smooth: 1,
+      showClock: false,
+      clockLimit: 2,
       isShow: true,
-      showCycle: true,
+    }, {
+      x: this.canvas.width / 2 + 120,
+      y: this.canvas.height - 1100,
+      width: 20,
+      height: 100,
+      type: 'metal',
+      smooth: 0,
+      showClock: false,
+      clockLimit: 2,
+      isShow: true,
     }]
     this.boards = this.boardsLeft.concat(this.boardsRight)
     backgroundMusic.playBackgroundMusic();
@@ -704,6 +816,12 @@ export default class Scene1 {
     this.touchStartTime = 0; // 记录触摸开始时间戳
     // 开局显示提示消息时间
     this.displayMessageTime = 1;
+    // 是否显示钟表
+    this.showClock = false;
+    // 统计钟表图标出现的时间
+    this.showClockTimeCount = 0;
+    // 跟踪记录钟表显示位置
+    this.trackClockPosition = 0;
     // 跟踪忍者踩到的右位置
     this.rightTrack = "";
     // 跟踪忍者踩到的左位置
@@ -724,9 +842,9 @@ export default class Scene1 {
     this.groundImage.src = '';
     this.successTipsImage.src = '';
     this.failTipsImage.src = '';
-    this.cycleImage.src = '';
     this.ivyImage.src = '';
     this.iceImage.src = '';
+    this.metalImage.src = '';
     this.glassImage.src = '';
     this.endImage.src = '';
     this.ninjaJumpImage.src = '';

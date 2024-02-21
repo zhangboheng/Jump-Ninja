@@ -530,12 +530,12 @@ export default class Scene1 {
     this.canCycleCount = true;
     if (this.showCycleCount > 0) {
       this.boards = this.boards.map(board=>{
-        const processedBoard = { ...board }; // 创建一个副本，以免修改原始对象
+        const processedBoard = { ...board };
         processedBoard.showLimit = processedBoard.showLimit + this.showCycleCount;
         return processedBoard;
       });
       this.boardsRight = this.boardsRight.map(board=>{
-        const processedBoard = { ...board }; // 创建一个副本，以免修改原始对象
+        const processedBoard = { ...board };
         processedBoard.showLimit = processedBoard.showLimit + this.showCycleCount;
         return processedBoard;
       });

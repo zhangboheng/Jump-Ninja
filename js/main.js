@@ -10,6 +10,7 @@ import TrailFourth from './scene/trailFourth.js';
 import TrailFifth from './scene/trailFifth.js';
 import TrailSixth from './scene/trailSixth.js';
 import TrailSeventh from './scene/trailSeventh.js';
+import TrailEighth from './scene/trailEighth.js';
 import Tutorial from './scene/tutorial.js';
 export default class Game {
   constructor() {
@@ -26,11 +27,12 @@ export default class Game {
     this.trailfifth = TrailFifth;
     this.trailsixth = TrailSixth;
     this.trailseventh = TrailSeventh;
+    this.traileighth = TrailEighth;
     this.tutorial = Tutorial;
     this.settings = Settings;
     this.instruction = Instruction;
-    this.currentScene = new this.startup(this);
-    this.instanceList = [Tutorial, TrailFirst, TrailSecond, TrailThird, TrailFourth, TrailFifth, TrailSixth, TrailSeventh]
+    this.currentScene = new this.traileighth(this);
+    this.instanceList = [Tutorial, TrailFirst, TrailSecond, TrailThird, TrailFourth, TrailFifth, TrailSixth, TrailSeventh, TrailEighth]
     canvas.addEventListener('touchstart', (e) => {
       this.currentScene.touchHandler(e);
     });
