@@ -2,6 +2,10 @@ import {
   createBackButton,
   drawIconButton,
 } from '../../utils/button';
+import SoundManager from '../../utils/soundManager';
+import BackgroundMusic from '../../utils/backgroundMusic';
+const soundManager = new SoundManager();
+const backgroundMusic = new BackgroundMusic();
 let systemInfo = wx.getSystemInfoSync();
 let menuButtonInfo = wx.getMenuButtonBoundingClientRect();
 export default class Scene1 {
@@ -12,12 +16,19 @@ export default class Scene1 {
     canvas.width = systemInfo.screenWidth * systemInfo.devicePixelRatio;
     canvas.height = systemInfo.screenHeight * systemInfo.devicePixelRatio;
     this.context.scale(systemInfo.devicePixelRatio, systemInfo.devicePixelRatio);
+    // 加载背景音乐
+    backgroundMusic.setBackgroundMusicState(wx.getStorageSync('backgroundMusicEnabled'));
+    backgroundMusic.setBackgroundMusicSource('audio/begin.mp3');
+    backgroundMusic.playBackgroundMusic();
+    // 获取音效初始状态
+    soundManager.setMusicState(wx.getStorageSync('musicEnabled'));
     this.backgroundImage = new Image();
     this.backgroundImage.src = 'image/background.jpg';
     this.backgroundMirrorImage = new Image();
     this.backgroundMirrorImage.src = 'image/backgroundmirror.jpg'
     // 创建返回按钮
     this.backButton = createBackButton(this.context, 10, menuButtonInfo.top, 'image/reply.png', () => {
+      this.isGameOver = true;
       this.game.switchScene(new this.game.choose(this.game));
     });
     // 分数前图标
@@ -276,6 +287,8 @@ export default class Scene1 {
       // 如果没有抓住木板，游戏结束
       if (!this.isBoardCaught && this.ninja.y > this.canvas.height) {
         this.isGameOver = true;
+        backgroundMusic.pauseBackgroundMusic();
+        soundManager.play('lose');
       }
       // 判断是否达到最高点
       if (previousVelocityY > 0 && this.ninja.velocityY <= 0) {
@@ -335,6 +348,8 @@ export default class Scene1 {
       // 如果没有抓住木板，游戏结束
       if (!this.isBoardCaught && this.ninja.y > this.canvas.height) {
         this.isGameOver = true;
+        backgroundMusic.pauseBackgroundMusic();
+        soundManager.play('lose');
       }
       // 判断是否达到最高点
       if (previousVelocityY > 0 && this.ninja.velocityY <= 0) {
@@ -344,6 +359,8 @@ export default class Scene1 {
     // 判断是否到达终点
     if (this.ninja.downRank == 0){
       this.isGameOver = true;
+      backgroundMusic.pauseBackgroundMusic();
+      soundManager.play('win');
     }
   }
   // 绘制木板
@@ -419,6 +436,7 @@ export default class Scene1 {
     if (touchX >= btn.x && touchX <= btn.x + btn.width &&
       touchY >= btn.y && touchY <= btn.y + btn.height) {
       btn.onClick();
+      backgroundMusic.pauseBackgroundMusic();
       return
     }
     // 游戏结束后重新开始
@@ -481,6 +499,7 @@ export default class Scene1 {
     this.isJumpDown = false;
     this.ninja.stopPoint = 0;
     this.clearLongPressTimer();
+    soundManager.play('jump');
   }
   // 开始记录长按计时
   startLongPressTimer() {
@@ -514,6 +533,7 @@ export default class Scene1 {
       toRight: false, // 是否向右跳
       downRank: 1, //下滑系数
     };
+    backgroundMusic.playBackgroundMusic();
     this.currentNinjaFrame = 0;
     this.currentNinjaRightFrame = 0;
     this.currentNinjaLeftFrame = 0;

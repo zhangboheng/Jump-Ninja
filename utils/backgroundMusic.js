@@ -1,10 +1,12 @@
 class BackgroundMusic {
   constructor() {
     this.backgroundMusic = wx.createInnerAudioContext();
-    this.backgroundMusic.src = 'audio/back.mp3';
     this.backgroundMusic.loop = true;
     // 初始化音乐播放状态
     this.backgroundMusicEnabled = this.getBackgroundMusicState();
+    this.defaultSource = 'audio/back.mp3';
+    // 设置默认音乐源
+    this.setBackgroundMusicSource(this.defaultSource);
   }
   getBackgroundMusicState() {
     // 使用微信API从本地存储获取音乐播放状态
@@ -15,6 +17,10 @@ class BackgroundMusic {
     // 使用微信API保存音乐播放状态到本地存储
     wx.setStorageSync('backgroundMusicEnabled', state);
     this.backgroundMusicEnabled = state;
+  }
+  // 设置背景音乐源
+  setBackgroundMusicSource(source) {
+    this.backgroundMusic.src = source;
   }
   // 播放背景音乐
   playBackgroundMusic() {
