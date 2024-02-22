@@ -134,6 +134,7 @@ export default class Scene1 {
     // 钟表图片
     this.clockImage = new Image();
     this.clockImage.src = 'image/clock.png';
+    this.angle = 0;
     // 终点图片
     this.endImage = new Image();
     this.endImage.src = 'image/goal.png';
@@ -251,7 +252,13 @@ export default class Scene1 {
     }
     if (this.showClock) {
       if (this.clockImage.complete) {
-        this.context.drawImage(this.clockImage, this.canvas.width / 2 - this.clockImage.width / 2, this.canvas.height - 1400 + groundY, this.clockImage.width, this.clockImage.height);
+        this.context.save();
+        this.context.translate(this.canvas.width / 2 - this.clockImage.width / 2 + 20, this.canvas.height - 1350 + groundY);
+        this.context.rotate(this.angle);
+        this.context.drawImage(this.clockImage, - this.clockImage.width / 2, - this.clockImage.height / 2, this.clockImage.width, this.clockImage.height);
+        this.context.restore();
+        // 增加角度以实现旋转
+        this.angle += 0.02;
       }
     }
   }
@@ -260,17 +267,13 @@ export default class Scene1 {
     if (this.showClock){
       this.showClockTimeCount = this.showClockTimeCount + 0.002
       if (this.showClockTimeCount > 2){
-        this.boards = this.boards.map(board=>{
-          const processedBoard = { ...board };
-          processedBoard.clockLimit = 2;
-          return processedBoard;
-        });
         this.boardsRight = this.boardsRight.map(board=>{
           const processedBoard = { ...board };
           processedBoard.clockLimit = 2;
           return processedBoard;
         });
         this.showClock = false;
+        this.boards = this.boardsLeft.concat(this.boardsRight)
       }
     }
   }
@@ -497,7 +500,10 @@ export default class Scene1 {
         }
         this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2 + 40);
         this.buttonNextInfo = drawIconButton(this.context, "前往下关", this.canvas.width / 2, this.canvas.height / 2 + 110);
-        wx.setStorageSync('trailNumber', 6)
+        const getTrailGame = wx.getStorageSync('trailNumber')
+        if (getTrailGame < 6){
+          wx.setStorageSync('trailNumber', 6)
+        }
       } else {
         if (this.failTipsImage.complete) {
           this.context.drawImage(this.failTipsImage, (this.canvas.width - this.failTipsImage.width) / 2, (this.canvas.height - this.failTipsImage.height) / 2 - this.failTipsImage.height / 2);
@@ -533,7 +539,7 @@ export default class Scene1 {
           this.game.switchScene(new this.game.trailseventh(this.game));
         }else{
           wx.shareAppMessage({
-            title: '小恐龙不要停！太难了吧',
+            title: '跃影忍者！太难了吧',
             imageUrl: 'image/thumbnail.jpg' // 分享图片的路径
           });
         }
@@ -682,6 +688,7 @@ export default class Scene1 {
     this.showClock = false;
     // 统计钟表图标出现的时间
     this.showClockTimeCount = 0;
+    this.angle = 0;
     // 游戏结束判断标准
     this.isGameOver = false;
     // 游戏重启
@@ -704,5 +711,8 @@ export default class Scene1 {
     this.endImage.src = '';
     this.ninjaJumpImage.src = '';
     this.ninjaJumpMirrorImage.src = '';
+    this.ninjaImages = [];
+    this.ninjaRightImages = [];
+    this.ninjaLeftImages = [];
   }
 }

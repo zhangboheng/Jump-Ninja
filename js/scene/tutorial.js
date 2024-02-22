@@ -2,6 +2,9 @@ import {
   createBackButton,
   drawIconButton,
 } from '../../utils/button';
+import {
+  showBoxMessage
+} from '../../utils/dialog';
 import SoundManager from '../../utils/soundManager';
 import BackgroundMusic from '../../utils/backgroundMusic';
 const soundManager = new SoundManager();
@@ -38,6 +41,12 @@ export default class Scene1 {
     this.score = 0;
     this.groundImage = new Image();
     this.groundImage.src = 'image/yard.jpg';
+    // 加载成功图片
+    this.successTipsImage = new Image();
+    this.successTipsImage.src = 'image/gamecompletetips.png'
+    // 加载失败图片
+    this.failTipsImage = new Image();
+    this.failTipsImage.src = 'image/gameovertips.png'
     // 添加忍者对象
     this.ninja = {
       x: this.canvas.width / 2 - 46.5, // 初始 x 位置
@@ -55,18 +64,29 @@ export default class Scene1 {
     };
     // 木板集合
     this.boardsLeft = [
-      {x: this.canvas.width / 2 - 80, y: this.canvas.height - 500, width: 11, height: 200, type: 'wood', smooth: 1},
-      {x: this.canvas.width / 2 - 100, y: this.canvas.height - 800, width: 9, height: 120, type: 'wood', smooth: 1},
-      {x: this.canvas.width / 2 - 60, y: this.canvas.height - 1100, width: 8, height: 80, type: 'wood', smooth: 1},
-      {x: this.canvas.width / 2 - 120, y: this.canvas.height - 1600, width: 13, height: 150, type: 'ice', smooth: 6},
-      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 2000, width: 12, height: 250, type: 'metal', smooth: 0}
+      {x: this.canvas.width / 2 - 80, y: this.canvas.height - 500, width: 11, height: 200, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 - 100, y: this.canvas.height - 800, width: 9, height: 120, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 - 60, y: this.canvas.height - 1100, width: 8, height: 80, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 - 120, y: this.canvas.height - 1600, width: 13, height: 150, type: 'ice', smooth: 6,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 1900, width: 12, height: 100, type: 'metal', smooth: 0.01, showClock: true, clockLimit: 2, isShow: true}
     ];
     this.boardsRight = [
-      {x: this.canvas.width / 2 + 80, y: this.canvas.height - 350, width: 9, height: 100, type: 'wood', smooth: 1},
-      {x: this.canvas.width / 2 + 90, y: this.canvas.height - 600, width: 12, height: 180, type: 'ice', smooth: 6},
-      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 900, width: 13, height: 150, type: 'wood', smooth: 1},
-      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 1300, width: 12, height: 90, type: 'wood', smooth: 1},
-      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 1700, width: 10, height: 220, type: 'wood', smooth: 1}
+      {x: this.canvas.width / 2 + 80, y: this.canvas.height - 350, width: 9, height: 100, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 + 90, y: this.canvas.height - 600, width: 12, height: 180, type: 'ice', smooth: 8,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 900, width: 13, height: 150, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 1300, width: 12, height: 90, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 1700, width: 10, height: 220, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 2100, width: 10, height: 120, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 1, isShow: true}
     ]
     this.boards = this.boardsLeft.concat(this.boardsRight)
     // 木板图片
@@ -78,9 +98,15 @@ export default class Scene1 {
     // 钢铁图片
     this.metalImage = new Image();
     this.metalImage.src = 'image/endflag.png';
+    // 玻璃图片
+    this.glassImage = new Image();
+    this.glassImage.src = 'image/glass.png';
     // 云朵图片
     this.cloudImage = new Image();
     this.cloudImage.src = 'image/cloud.png';
+    // 钟表图片
+    this.clockImage = new Image();
+    this.clockImage.src = 'image/clock.png';
     // 在地面上角色图片集合
     this.ninjaImages = [];
     for (let i = 0; i <= 4; i++) {
@@ -122,6 +148,23 @@ export default class Scene1 {
     // 添加触摸事件监听
     wx.onTouchStart(this.touchStartHandler.bind(this));
     wx.onTouchEnd(this.touchEndHandler.bind(this));
+    // 开局显示提示消息时间
+    this.displayMessageTime = 1;
+    // 重新开始按钮
+    this.buttonStartInfo = "";
+    // 分享好友按钮
+    this.buttonNextInfo = "";
+    // 是否显示钟表图标
+    this.showClock = false;
+    // 跟踪记录钟表显示位置
+    this.trackClockPosition = 0;
+    // 统计钟表图标出现的时间
+    this.showClockTimeCount = 0;
+    this.angle = 0;
+    // 跟踪忍者踩到的右位置
+    this.rightTrack = "";
+    // 跟踪忍者踩到的左位置
+    this.leftTrack = "";
     // 游戏结束判断标准
     this.isGameOver = false;
     // 是否重新开始
@@ -158,6 +201,69 @@ export default class Scene1 {
   drawBack() {
     if (this.backButton.image.complete) {
       this.context.drawImage(this.backButton.image, this.backButton.x, this.backButton.y);
+    }
+  }
+  // 绘制消息提示
+  drawMessageBox() {
+    this.context.font = '16px Arial';
+    if (this.displayMessageTime > 0) {
+      showBoxMessage(this.context, "Let's GO!", this.canvas.width / 2, this.canvas.height / 2);
+      setTimeout(() => {
+        this.displayMessageTime--
+      }, 500);
+    }
+  }
+  // 绘制时钟显示
+  drawClock() {
+    let groundY = 0;
+    if (this.ninja.y < this.canvas.height - 270) {
+      groundY = this.canvas.height - 270 - this.ninja.y
+    } else {
+      groundY = 0;
+    }
+    if (this.showClock) {
+      if (this.clockImage.complete) {
+        this.context.save();
+        this.context.translate(this.canvas.width / 2, this.trackClockPosition + 50 + groundY);
+        this.context.rotate(this.angle);
+        this.context.drawImage(this.clockImage, - this.clockImage.width / 2, - this.clockImage.height / 2, this.clockImage.width, this.clockImage.height);
+        this.context.restore();
+        // 增加角度以实现旋转
+        this.angle += 0.02;
+      }
+    }
+  }
+  // 更新钟表计时
+  updateClock() {
+    if (this.showClock) {
+      this.showClockTimeCount = this.showClockTimeCount + 0.002
+      if (this.showClockTimeCount > 2) {
+        this.boardsLeft = this.boardsLeft.map((board, index) => {
+          if(this.boardsLeft.indexOf(this.leftTrack) == index){
+            const processedBoard = {
+              ...board
+            };
+            processedBoard.showClock = false;
+            return processedBoard;
+          }else{
+            return board;
+          }
+        });
+        this.boardsRight = this.boardsRight.map((board, index) => {
+            if(this.boardsRight.indexOf(this.rightTrack) + 1 == index){
+              const processedBoard = {
+                ...board
+              };
+              processedBoard.clockLimit = 2;
+              return processedBoard;
+            }else{
+              return board
+            }
+        });
+        this.showClock = false;
+        this.showClockTimeCount = 0;
+        this.boards = this.boardsLeft.concat(this.boardsRight)
+      }
     }
   }
   // 绘制分数
@@ -252,6 +358,7 @@ export default class Scene1 {
         this.ninja.y -= this.ninja.velocityY;
         this.ninja.velocityY -= this.ninja.gravity;
         this.ninja.fly = true;
+        this.showClock = false;
       } else {
         this.ninja.stopPoint = this.ninja.stopPoint - 0.1 * this.ninja.downRank
         if (this.ninja.stopPoint > -0.1) {
@@ -265,7 +372,7 @@ export default class Scene1 {
         }
       }
       // 是否抓住木板
-      for (const board of this.boardsRight) {
+      for (const board of this.boardsRight.filter(item => item.clockLimit >= 2 && item.isShow)) {
         if (
           this.ninja.x + 73 <= board.x + board.width &&
           this.ninja.x + 73 >= board.x &&
@@ -277,6 +384,12 @@ export default class Scene1 {
           this.ninja.downRank = board.smooth;
           this.ninja.velocityX = 0;
           this.ninja.velocityY = 0;
+          this.rightTrack = board;
+          this.ninja.fly = false;
+          if (board.showClock) {
+            this.showClock = board.showClock;
+            this.trackClockPosition = board.y
+          }
           let getIndex = this.boardsRight.indexOf(board);
           if (this.score < 2 * (getIndex + 1) - 1){
             this.score = 2 * (getIndex + 1) - 1
@@ -313,6 +426,7 @@ export default class Scene1 {
         this.ninja.y -= this.ninja.velocityY;
         this.ninja.velocityY -= this.ninja.gravity;
         this.ninja.fly = true;
+        this.showClock = false;
       } else {
         this.ninja.stopPoint = this.ninja.stopPoint - 0.1 * this.ninja.downRank
         if (this.ninja.stopPoint > -0.1) {
@@ -326,7 +440,7 @@ export default class Scene1 {
         }
       }
       // 是否抓住木板
-      for (const board of this.boardsLeft) {
+      for (const board of this.boardsLeft.filter(item => item.clockLimit >= 2 && item.isShow)) {
         if (
           this.ninja.x + 23 >= board.x &&
           this.ninja.x + 23 <= board.x + board.width &&
@@ -338,6 +452,12 @@ export default class Scene1 {
           this.ninja.downRank = board.smooth;
           this.ninja.velocityX = 0;
           this.ninja.velocityY = 0;
+          this.leftTrack = board;
+          this.ninja.fly = false;
+          if (board.showClock) {
+            this.showClock = board.showClock;
+            this.trackClockPosition = board.y
+          }
           let getIndex = this.boardsLeft.indexOf(board);
           if (this.score < 2 * (getIndex + 1)){
             this.score = 2 * (getIndex + 1)
@@ -371,7 +491,7 @@ export default class Scene1 {
     } else {
       groundY = 0;
     }
-    for (const board of this.boards) {
+    for (const board of this.boards.filter(item => item.clockLimit >= 2 && item.isShow)) {
       if (board.type == 'wood') {
         this.context.drawImage(this.ivyImage, board.x, board.y + groundY, board.width, board.height);
       }
@@ -381,6 +501,38 @@ export default class Scene1 {
       if (board.type == 'metal') {
         this.context.drawImage(this.metalImage, board.x, board.y + groundY, board.width, board.height);
       }
+      if (board.type == 'glass') {
+        this.context.drawImage(this.glassImage, board.x, board.y + groundY, board.width, board.height);
+      }
+    }
+  }
+  // 更新木板
+  updateBoard() {
+    //更新踩到木板的位置
+    if (this.ninja.fly) {
+      this.boardsLeft = this.boardsLeft.map(item => {
+        if (item == this.leftTrack && item.type == 'glass') {
+          const processedBoard = {
+            ...item
+          };
+          processedBoard.isShow = false;
+          return processedBoard;
+        } else {
+          return item
+        }
+      });
+      this.boardsRight = this.boardsRight.map(item => {
+        if (item == this.rightTrack && item.type == 'glass') {
+          const processedBoard = {
+            ...item
+          };
+          processedBoard.isShow = false;
+          return processedBoard;
+        } else {
+          return item
+        }
+      });
+      this.boards = this.boardsLeft.concat(this.boardsRight)
     }
   }
   // 绘制云朵
@@ -411,17 +563,29 @@ export default class Scene1 {
     this.drawBoard();
     // 绘制云朵
     this.drawCloud();
+    // 绘制开局提示消息
+    this.drawMessageBox();
+    // 绘制时钟显示
+    this.drawClock();
   }
   update() {
     if (!this.isGameOver) {
       this.updateNinja();
+      this.updateClock();
     }else{
       this.context.font = '16px Arial';
       if (this.ninja.downRank == 0) {
+        if (this.successTipsImage.complete) {
+          this.context.drawImage(this.successTipsImage, (this.canvas.width - this.successTipsImage.width) / 2, (this.canvas.height - this.successTipsImage.height) / 2 - this.successTipsImage.height / 2);
+        }
         this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2 + 40);
-        this.buttonNextInfo = drawIconButton(this.context, "前往下关", this.canvas.width / 2, this.canvas.height / 2 + 110);
+        this.buttonNextInfo = drawIconButton(this.context, "返回选关", this.canvas.width / 2, this.canvas.height / 2 + 110);
       } else {
-        this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2);
+        if (this.failTipsImage.complete) {
+          this.context.drawImage(this.failTipsImage, (this.canvas.width - this.failTipsImage.width) / 2, (this.canvas.height - this.failTipsImage.height) / 2 - this.failTipsImage.height / 2);
+        }
+        this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2 + 40);
+        this.buttonNextInfo = drawIconButton(this.context, "分享好友", this.canvas.width / 2, this.canvas.height / 2 + 110);
       }
     }
   }
@@ -444,6 +608,17 @@ export default class Scene1 {
       if (touchX >= this.buttonStartInfo.x && touchX <= this.buttonStartInfo.x + this.buttonStartInfo.width &&
         touchY >= this.buttonStartInfo.y && touchY <= this.buttonStartInfo.y + this.buttonStartInfo.height) {
         this.resetGame();
+      }
+      if (touchX >= this.buttonNextInfo.x && touchX <= this.buttonNextInfo.x + this.buttonNextInfo.width &&
+        touchY >= this.buttonNextInfo.y && touchY <= this.buttonNextInfo.y + this.buttonNextInfo.height) {
+        if (this.ninja.downRank == 0) {
+          this.game.switchScene(new this.game.choose(this.game));
+        } else {
+          wx.shareAppMessage({
+            title: '跃影忍者！太难了吧',
+            imageUrl: 'image/thumbnail.jpg' // 分享图片的路径
+          });
+        }
       }
     }
   }
@@ -533,6 +708,33 @@ export default class Scene1 {
       toRight: false, // 是否向右跳
       downRank: 1, //下滑系数
     };
+    // 木板集合
+    this.boardsLeft = [
+      {x: this.canvas.width / 2 - 80, y: this.canvas.height - 500, width: 11, height: 200, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 - 100, y: this.canvas.height - 800, width: 9, height: 120, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 - 60, y: this.canvas.height - 1100, width: 8, height: 80, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 - 120, y: this.canvas.height - 1600, width: 13, height: 150, type: 'ice', smooth: 6,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 1900, width: 12, height: 100, type: 'metal', smooth: 0.01, showClock: true, clockLimit: 2, isShow: true}
+    ];
+    this.boardsRight = [
+      {x: this.canvas.width / 2 + 80, y: this.canvas.height - 350, width: 9, height: 100, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 + 90, y: this.canvas.height - 600, width: 12, height: 180, type: 'ice', smooth: 8,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 900, width: 13, height: 150, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 1300, width: 12, height: 90, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 1700, width: 10, height: 220, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 2, isShow: true},
+      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 2100, width: 10, height: 120, type: 'wood', smooth: 1,
+      showClock: false, clockLimit: 1, isShow: true}
+    ]
+    this.boards = this.boardsLeft.concat(this.boardsRight)
     backgroundMusic.playBackgroundMusic();
     this.currentNinjaFrame = 0;
     this.currentNinjaRightFrame = 0;
@@ -546,9 +748,45 @@ export default class Scene1 {
     this.longPressTimer = null; // 用于存储长按定时器
     this.isLongPress = false; // 标记是否处于长按状态
     this.touchStartTime = 0; // 记录触摸开始时间戳
+    // 开局显示提示消息时间
+    this.displayMessageTime = 1;
+    // 是否显示钟表图标
+    this.showClock = false;
+    // 跟踪记录钟表显示位置
+    this.trackClockPosition = 0;
+    // 统计钟表图标出现的时间
+    this.showClockTimeCount = 0;
+    // 跟踪忍者踩到的右位置
+    this.rightTrack = "";
+    // 跟踪忍者踩到的左位置
+    this.leftTrack = "";
     // 游戏结束判断标准
     this.isGameOver = false;
     // 游戏重启
     this.isRestart = true;
+  }
+  // 页面销毁机制
+  destroy() {
+    // 移除触摸事件监听器
+    wx.offTouchStart(this.touchStartHandler.bind(this));
+    wx.offTouchEnd(this.touchEndHandler.bind(this));
+    this.backgroundImage.src = '';
+    this.backgroundMirrorImage.src = '';
+    this.backButton.image.src = '';
+    this.scoreImage.src = '';
+    this.groundImage.src = '';
+    this.successTipsImage.src = '';
+    this.failTipsImage.src = '';
+    this.ivyImage.src = '';
+    this.iceImage.src = '';
+    this.metalImage.src = '';
+    this.glassImage.src = '';
+    this.clockImage.src = '';
+    this.cloudImage.src = '';
+    this.ninjaJumpImage.src = '';
+    this.ninjaJumpMirrorImage.src = '';
+    this.ninjaImages = [];
+    this.ninjaRightImages = [];
+    this.ninjaLeftImages = [];
   }
 }

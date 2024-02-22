@@ -422,7 +422,7 @@ export default class Scene1 {
           this.game.switchScene(new this.game.trailsecond(this.game));
         }else{
           wx.shareAppMessage({
-            title: '小恐龙不要停！太难了吧',
+            title: '跃影忍者！太难了吧',
             imageUrl: 'image/thumbnail.jpg' // 分享图片的路径
           });
         }
@@ -549,5 +549,8 @@ export default class Scene1 {
     this.endImage.src = '';
     this.ninjaJumpImage.src = '';
     this.ninjaJumpMirrorImage.src = '';
+    this.ninjaImages = [];
+    this.ninjaRightImages = [];
+    this.ninjaLeftImages = [];
   }
 }

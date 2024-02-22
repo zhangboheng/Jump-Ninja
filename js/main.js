@@ -33,7 +33,7 @@ export default class Game {
     this.tutorial = Tutorial;
     this.settings = Settings;
     this.instruction = Instruction;
-    this.currentScene = new this.episode(this);
+    this.currentScene = new this.tutorial(this);
     this.instanceList = [Tutorial, TrailFirst, TrailSecond, TrailThird, TrailFourth, TrailFifth, TrailSixth, TrailSeventh, TrailEighth]
     canvas.addEventListener('touchstart', (e) => {
       this.currentScene.touchHandler(e);
@@ -56,7 +56,7 @@ export default class Game {
     // 设置默认分享信息
     wx.onShareAppMessage(() => {
       return {
-        title: '小恐龙不要停！太难了吧',
+        title: '跃影忍者！太难了吧',
         imageUrl: 'image/background.jpg' // 分享图片的路径
       };
     });

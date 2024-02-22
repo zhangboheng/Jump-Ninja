@@ -474,7 +474,10 @@ export default class Scene1 {
         }
         this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2 + 40);
         this.buttonNextInfo = drawIconButton(this.context, "前往下关", this.canvas.width / 2, this.canvas.height / 2 + 110);
-        wx.setStorageSync('trailNumber', 5)
+        const getTrailGame = wx.getStorageSync('trailNumber')
+        if (getTrailGame < 5){
+          wx.setStorageSync('trailNumber', 5)
+        }
       } else {
         if (this.failTipsImage.complete) {
           this.context.drawImage(this.failTipsImage, (this.canvas.width - this.failTipsImage.width) / 2, (this.canvas.height - this.failTipsImage.height) / 2 - this.failTipsImage.height / 2);
@@ -510,7 +513,7 @@ export default class Scene1 {
           this.game.switchScene(new this.game.trailsixth(this.game));
         }else{
           wx.shareAppMessage({
-            title: '小恐龙不要停！太难了吧',
+            title: '跃影忍者！太难了吧',
             imageUrl: 'image/thumbnail.jpg' // 分享图片的路径
           });
         }
@@ -687,5 +690,8 @@ export default class Scene1 {
     this.endImage.src = '';
     this.ninjaJumpImage.src = '';
     this.ninjaJumpMirrorImage.src = '';
+    this.ninjaImages = [];
+    this.ninjaRightImages = [];
+    this.ninjaLeftImages = [];
   }
 }
