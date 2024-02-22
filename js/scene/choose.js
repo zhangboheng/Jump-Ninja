@@ -67,6 +67,7 @@ export default class Instruction {
     this.context.fillStyle = 'black';
     this.context.font = '14px Arial';
     this.context.textAlign = 'center';
+    this.context.textBaseline = 'middle';
     this.context.fillText('点击加入我的小程序', rectX + rectWidth / 2, rectY + rectHeight / 2 + 2); 
   }
   // 绘制第一关
@@ -176,20 +177,8 @@ export default class Instruction {
       const getTrailGame = wx.getStorageSync('trailNumber')
       if(getTrailGame == '') {
         this.game.switchScene(new this.game.trailfirst(this.game));
-      }else if(getTrailGame + 1 == 2) {
-        this.game.switchScene(new this.game.trailsecond(this.game));
-      }else if(getTrailGame + 1 == 3) {
-        this.game.switchScene(new this.game.trailthird(this.game));
-      }else if(getTrailGame + 1 == 4) {
-        this.game.switchScene(new this.game.trailfourth(this.game));
-      }else if(getTrailGame + 1 == 5) {
-        this.game.switchScene(new this.game.trailfifth(this.game));
-      }else if(getTrailGame + 1 == 6) {
-        this.game.switchScene(new this.game.trailsixth(this.game));
-      }else if(getTrailGame + 1 == 7) {
-        this.game.switchScene(new this.game.trailseventh(this.game));
       }else{
-        this.game.switchScene(new this.game.traileighth(this.game));
+        this.game.switchScene(new this.game.select(this.game));
       }
     }
     // 检查触摸点是否在出发内

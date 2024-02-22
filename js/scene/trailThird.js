@@ -439,7 +439,7 @@ export default class Scene1 {
       if (touchX >= this.buttonNextInfo.x && touchX <= this.buttonNextInfo.x + this.buttonNextInfo.width &&
         touchY >= this.buttonNextInfo.y && touchY <= this.buttonNextInfo.y + this.buttonNextInfo.height) {
         if (this.ninja.downRank == 0){
-          this.game.switchScene(new this.game.trailthird(this.game));
+          this.game.switchScene(new this.game.trailfourth(this.game));
         }else{
           wx.shareAppMessage({
             title: '小恐龙不要停！太难了吧',

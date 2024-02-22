@@ -1,6 +1,7 @@
 import Episode from './scene/episode.js';
 import Startup from './scene/startup.js';
 import Choose from './scene/choose.js';
+import Select from './scene/select.js';
 import Settings from './scene/settings.js';
 import Instruction from './scene/instruction.js';
 import TrailFirst from './scene/trailFirst.js';
@@ -20,6 +21,7 @@ export default class Game {
     this.episode = Episode;
     this.startup = Startup;
     this.choose = Choose;
+    this.select = Select;
     this.trailfirst = TrailFirst;
     this.trailsecond = TrailSecond;
     this.trailthird = TrailThird;
@@ -31,7 +33,7 @@ export default class Game {
     this.tutorial = Tutorial;
     this.settings = Settings;
     this.instruction = Instruction;
-    this.currentScene = new this.traileighth(this);
+    this.currentScene = new this.episode(this);
     this.instanceList = [Tutorial, TrailFirst, TrailSecond, TrailThird, TrailFourth, TrailFifth, TrailSixth, TrailSeventh, TrailEighth]
     canvas.addEventListener('touchstart', (e) => {
       this.currentScene.touchHandler(e);

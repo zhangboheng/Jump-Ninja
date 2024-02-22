@@ -585,8 +585,8 @@ export default class Scene1 {
           this.context.drawImage(this.successTipsImage, (this.canvas.width - this.successTipsImage.width) / 2, (this.canvas.height - this.successTipsImage.height) / 2 - this.successTipsImage.height / 2);
         }
         this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2 + 40);
-        this.buttonNextInfo = drawIconButton(this.context, "前往下关", this.canvas.width / 2, this.canvas.height / 2 + 110);
-        wx.setStorageSync('trailNumber', 6)
+        this.buttonNextInfo = drawIconButton(this.context, "返回选关", this.canvas.width / 2, this.canvas.height / 2 + 110);
+        wx.setStorageSync('trailNumber', 8)
       } else {
         if (this.failTipsImage.complete) {
           this.context.drawImage(this.failTipsImage, (this.canvas.width - this.failTipsImage.width) / 2, (this.canvas.height - this.failTipsImage.height) / 2 - this.failTipsImage.height / 2);
@@ -619,7 +619,7 @@ export default class Scene1 {
       if (touchX >= this.buttonNextInfo.x && touchX <= this.buttonNextInfo.x + this.buttonNextInfo.width &&
         touchY >= this.buttonNextInfo.y && touchY <= this.buttonNextInfo.y + this.buttonNextInfo.height) {
         if (this.ninja.downRank == 0) {
-          this.game.switchScene(new this.game.trailnineth(this.game));
+          this.game.switchScene(new this.game.choose(this.game));
         } else {
           wx.shareAppMessage({
             title: '小恐龙不要停！太难了吧',
