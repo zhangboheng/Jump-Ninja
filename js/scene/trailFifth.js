@@ -477,6 +477,8 @@ export default class Scene1 {
         const getTrailGame = wx.getStorageSync('trailNumber')
         if (getTrailGame < 5){
           wx.setStorageSync('trailNumber', 5)
+        }else{
+          wx.setStorageSync('trailNumber', getTrailGame)
         }
       } else {
         if (this.failTipsImage.complete) {

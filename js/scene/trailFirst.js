@@ -386,7 +386,12 @@ export default class Scene1 {
         }
         this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2 + 40);
         this.buttonNextInfo = drawIconButton(this.context, "前往下关", this.canvas.width / 2, this.canvas.height / 2 + 110);
-        wx.setStorageSync('trailNumber', 1)
+        const getTrailGame = wx.getStorageSync('trailNumber')
+        if (getTrailGame == ''){
+          wx.setStorageSync('trailNumber', 1)
+        }else{
+          wx.setStorageSync('trailNumber', getTrailGame)
+        }
       } else {
         if (this.failTipsImage.complete) {
           this.context.drawImage(this.failTipsImage, (this.canvas.width - this.failTipsImage.width) / 2, (this.canvas.height - this.failTipsImage.height) / 2 - this.failTipsImage.height / 2);
