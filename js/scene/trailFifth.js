@@ -168,6 +168,7 @@ export default class Scene1 {
     wx.onTouchEnd(this.touchEndHandler.bind(this));
     // 开局显示提示消息时间
     this.displayMessageTime = 1;
+    this.angle = 0;
     // 重新开始按钮
     this.buttonStartInfo = "";
     // 分享好友按钮
@@ -235,7 +236,13 @@ export default class Scene1 {
     }
     if (this.showCycle) {
       if (this.cycleImage.complete) {
-        this.context.drawImage(this.cycleImage, this.canvas.width / 2 - this.cycleImage.width / 2, this.canvas.height - 1000 + groundY, this.cycleImage.width, this.cycleImage.height);
+        this.context.save();
+        this.context.translate(this.canvas.width / 2, this.canvas.height - 1000 + groundY);
+        this.context.rotate(this.angle);
+        this.context.drawImage(this.cycleImage, - this.cycleImage.width / 2, - this.cycleImage.height / 2, this.cycleImage.width, this.cycleImage.height);
+        this.context.restore();
+        // 增加角度以实现旋转
+        this.angle += 0.02;
       }
     }
   }
@@ -664,6 +671,7 @@ export default class Scene1 {
     this.touchStartTime = 0; // 记录触摸开始时间戳
     // 开局显示提示消息时间
     this.displayMessageTime = 1;
+    this.angle = 0;
     // 是否显示循环
     this.showCycle = false;
     // 是否允许统计

@@ -43,10 +43,13 @@ export default class Scene1 {
     this.groundImage.src = 'image/yard.jpg';
     // 加载成功图片
     this.successTipsImage = new Image();
-    this.successTipsImage.src = 'image/gamecompletetips.png'
+    this.successTipsImage.src = 'image/gamecompletetips.png';
     // 加载失败图片
     this.failTipsImage = new Image();
-    this.failTipsImage.src = 'image/gameovertips.png'
+    this.failTipsImage.src = 'image/gameovertips.png';
+    // 加载循环标志图片
+    this.cycleImage = new Image();
+    this.cycleImage.src = 'image/cycle.png';
     // 添加忍者对象
     this.ninja = {
       x: this.canvas.width / 2 - 46.5, // 初始 x 位置
@@ -62,31 +65,51 @@ export default class Scene1 {
       toRight: false, // 是否向右跳
       downRank: 1, //下滑系数
     };
+    // 是否显示循环
+    this.showCycle = false;
+    // 是否允许统计
+    this.canCycleCount = true;
+    // 统计显示数据
+    this.showCycleCount = 0;
+    // 跟踪循环图片位置
+    this.trackCyclePosition = 0;
     // 木板集合
     this.boardsLeft = [
       {x: this.canvas.width / 2 - 80, y: this.canvas.height - 500, width: 11, height: 200, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 - 100, y: this.canvas.height - 800, width: 9, height: 120, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 - 60, y: this.canvas.height - 1100, width: 8, height: 80, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 - 120, y: this.canvas.height - 1600, width: 13, height: 150, type: 'ice', smooth: 6,
-      showClock: false, clockLimit: 2, isShow: true},
-      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 1900, width: 12, height: 100, type: 'metal', smooth: 0.01, showClock: true, clockLimit: 2, isShow: true}
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 1900, width: 12, height: 100, type: 'metal', smooth: 0.01, showClock: true, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 - 80, y: this.canvas.height - 2428, width: 18, height: 150, type: 'metal', smooth: 0.01, showClock: true, clockLimit: 1, showLimit: 8, isShow: true, showLogo: true},
+      {x: this.canvas.width / 2 - 108, y: this.canvas.height - 2828, width: 18, height: 125, type: 'wood', smooth: 1, showClock: false, clockLimit: 2, showLimit: 0, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 - 80, y: this.canvas.height - 3228, width: 12, height: 150, type: 'metal', smooth: 0.01, showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 3428, width: 12, height: 166, type: 'wood', smooth: 1, showClock: false, clockLimit: 1, showLimit: 8, isShow: true, showLogo: false}
     ];
     this.boardsRight = [
       {x: this.canvas.width / 2 + 80, y: this.canvas.height - 350, width: 9, height: 100, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 + 90, y: this.canvas.height - 600, width: 12, height: 180, type: 'ice', smooth: 8,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 + 60, y: this.canvas.height - 900, width: 13, height: 150, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 + 60, y: this.canvas.height - 1300, width: 12, height: 90, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 + 60, y: this.canvas.height - 1700, width: 10, height: 220, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
-      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 2100, width: 10, height: 120, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 1, isShow: true}
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 2100, width: 10, height: 120, type: 'glass', smooth: 6,
+      showClock: false, clockLimit: 1, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 72, y: this.canvas.height - 2000, width: 8, height: 120, type: 'glass', smooth: 6,
+      showClock: false, clockLimit: 1, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 80, y: this.canvas.height - 2428, width: 18, height: 150, type: 'metal', smooth: 0.01, showClock: false, clockLimit: 1, showLimit: 8, isShow: true, showLogo: true},
+      {x: this.canvas.width / 2 + 108, y: this.canvas.height - 2628, width: 18, height: 175, type: 'wood', smooth: 1, showClock: false, clockLimit: 2, showLimit: 0, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 90, y: this.canvas.height - 3028, width: 20, height: 150, type: 'glass', smooth: 6, showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 90, y: this.canvas.height - 3500, width: 10, height: 320, type: 'glass', smooth: 6, showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 100, y: this.canvas.height - 3400, width: 10, height: 220, type: 'glass', smooth: 6, showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 110, y: this.canvas.height - 3300, width: 10, height: 120, type: 'metal', smooth: 0.01, showClock: true, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false}
     ]
     this.boards = this.boardsLeft.concat(this.boardsRight)
     // 木板图片
@@ -239,10 +262,11 @@ export default class Scene1 {
       this.showClockTimeCount = this.showClockTimeCount + 0.002
       if (this.showClockTimeCount > 2) {
         this.boardsLeft = this.boardsLeft.map((board, index) => {
-          if(this.boardsLeft.indexOf(this.leftTrack) == index){
+          if(this.boardsLeft.indexOf(this.leftTrack) == index || index - this.boardsLeft.indexOf(this.leftTrack) >=1 && index - this.boardsLeft.indexOf(this.leftTrack) <= 3){
             const processedBoard = {
               ...board
             };
+            processedBoard.clockLimit = 2;
             processedBoard.showClock = false;
             return processedBoard;
           }else{
@@ -250,11 +274,12 @@ export default class Scene1 {
           }
         });
         this.boardsRight = this.boardsRight.map((board, index) => {
-            if(this.boardsRight.indexOf(this.rightTrack) + 1 == index){
+            if(this.boardsRight.indexOf(this.rightTrack) == index || index - this.boardsRight.indexOf(this.rightTrack) >=1 && index - this.boardsRight.indexOf(this.rightTrack) <= 3){
               const processedBoard = {
                 ...board
               };
               processedBoard.clockLimit = 2;
+              processedBoard.showClock = false;
               return processedBoard;
             }else{
               return board
@@ -290,6 +315,50 @@ export default class Scene1 {
     this.context.textAlign = 'left'; // 文本左对齐
     this.context.textBaseline = 'middle';
     this.context.fillText(this.score, scoreX, scoreY);
+  }
+  // 绘制循环标志
+  drawCycleLogo() {
+    let groundY = 0;
+    if (this.ninja.y < this.canvas.height - 270) {
+      groundY = this.canvas.height - 270 - this.ninja.y
+    } else {
+      groundY = 0;
+    }
+    if (this.showCycle) {
+      if (this.cycleImage.complete) {
+        this.context.save();
+        this.context.translate(this.canvas.width / 2, this.trackCyclePosition + groundY);
+        this.context.rotate(this.angle);
+        this.context.drawImage(this.cycleImage, - this.cycleImage.width / 2, - this.cycleImage.height / 2, this.cycleImage.width, this.cycleImage.height);
+        this.context.restore();
+        // 增加角度以实现旋转
+        this.angle += 0.02;
+      }
+    }
+  }
+  // 更新循环图标显示状态
+  updateCycleLogo() {
+    if (this.showCycle) {
+      this.boardsLeft = this.boardsLeft.map((board, index) => {
+        if(this.boardsLeft.indexOf(this.leftTrack) == index || index - this.boardsLeft.indexOf(this.leftTrack) >=1 && index - this.boardsLeft.indexOf(this.leftTrack) <= 3){
+          const processedBoard = { ...board };
+          processedBoard.showLimit = processedBoard.showLimit + this.showCycleCount;
+          return processedBoard;
+        }else{
+          return board;
+        }
+      });
+      this.boardsRight = this.boardsRight.map((board, index) => {
+          if(this.boardsRight.indexOf(this.rightTrack) == index || index - this.boardsRight.indexOf(this.rightTrack) >=1 && index - this.boardsRight.indexOf(this.rightTrack) <= 3){
+            const processedBoard = { ...board };
+            processedBoard.showLimit = processedBoard.showLimit + this.showCycleCount;
+            return processedBoard;
+          }else{
+            return board
+          }
+      });
+      this.boards = this.boardsLeft.concat(this.boardsRight)
+    }
   }
   // 绘制忍者
   drawNinja() {
@@ -359,6 +428,7 @@ export default class Scene1 {
         this.ninja.velocityY -= this.ninja.gravity;
         this.ninja.fly = true;
         this.showClock = false;
+        this.showCycle = false;
       } else {
         this.ninja.stopPoint = this.ninja.stopPoint - 0.1 * this.ninja.downRank
         if (this.ninja.stopPoint > -0.1) {
@@ -372,7 +442,7 @@ export default class Scene1 {
         }
       }
       // 是否抓住木板
-      for (const board of this.boardsRight.filter(item => item.clockLimit >= 2 && item.isShow)) {
+      for (const board of this.boardsRight.filter(item => item.clockLimit >= 2 && item.isShow && item.showLimit >= 8)) {
         if (
           this.ninja.x + 73 <= board.x + board.width &&
           this.ninja.x + 73 >= board.x &&
@@ -389,6 +459,15 @@ export default class Scene1 {
           if (board.showClock) {
             this.showClock = board.showClock;
             this.trackClockPosition = board.y
+          }
+          this.showCycle = board.showLogo;
+          if (this.canCycleCount && this.showCycle){
+            this.showCycleCount++;
+            this.canCycleCount = false;
+            this.trackCyclePosition = board.y;
+          }
+          if (!this.showCycle){
+            this.showCycleCount = 0
           }
           let getIndex = this.boardsRight.indexOf(board);
           if (this.score < 2 * (getIndex + 1) - 1){
@@ -427,6 +506,7 @@ export default class Scene1 {
         this.ninja.velocityY -= this.ninja.gravity;
         this.ninja.fly = true;
         this.showClock = false;
+        this.showCycle = false;
       } else {
         this.ninja.stopPoint = this.ninja.stopPoint - 0.1 * this.ninja.downRank
         if (this.ninja.stopPoint > -0.1) {
@@ -440,7 +520,7 @@ export default class Scene1 {
         }
       }
       // 是否抓住木板
-      for (const board of this.boardsLeft.filter(item => item.clockLimit >= 2 && item.isShow)) {
+      for (const board of this.boardsLeft.filter(item => item.clockLimit >= 2 && item.isShow && item.showLimit >= 8)) {
         if (
           this.ninja.x + 23 >= board.x &&
           this.ninja.x + 23 <= board.x + board.width &&
@@ -457,6 +537,15 @@ export default class Scene1 {
           if (board.showClock) {
             this.showClock = board.showClock;
             this.trackClockPosition = board.y
+          }
+          this.showCycle = board.showLogo;
+          if (this.canCycleCount && this.showCycle){
+            this.showCycleCount++;
+            this.canCycleCount = false;
+            this.trackCyclePosition = board.y;
+          }
+          if (!this.showCycle){
+            this.showCycleCount = 0
           }
           let getIndex = this.boardsLeft.indexOf(board);
           if (this.score < 2 * (getIndex + 1)){
@@ -491,7 +580,7 @@ export default class Scene1 {
     } else {
       groundY = 0;
     }
-    for (const board of this.boards.filter(item => item.clockLimit >= 2 && item.isShow)) {
+    for (const board of this.boards.filter(item => item.clockLimit >= 2 && item.isShow && item.showLimit >= 8)) {
       if (board.type == 'wood') {
         this.context.drawImage(this.ivyImage, board.x, board.y + groundY, board.width, board.height);
       }
@@ -567,11 +656,19 @@ export default class Scene1 {
     this.drawMessageBox();
     // 绘制时钟显示
     this.drawClock();
+    // 绘制循环标志
+    this.drawCycleLogo();
   }
   update() {
     if (!this.isGameOver) {
+      // 更新忍者状态
       this.updateNinja();
+      // 更新木板显示状态
+      this.updateBoard();
+      // 更新钟表图标显示状态
       this.updateClock();
+      // 更新循环图标显示状态
+      this.updateCycleLogo()
     }else{
       this.context.font = '16px Arial';
       if (this.ninja.downRank == 0) {
@@ -632,6 +729,7 @@ export default class Scene1 {
     }
     const touch = e.touches[0];
     this.ninja.default = false;
+    this.canCycleCount = true;
     // 记录触摸开始时间戳
     this.touchStartTime = Date.now();
     // 处理触摸开始事件
@@ -708,31 +806,51 @@ export default class Scene1 {
       toRight: false, // 是否向右跳
       downRank: 1, //下滑系数
     };
+    // 是否显示循环
+    this.showCycle = false;
+    // 是否允许统计
+    this.canCycleCount = true;
+    // 统计显示数据
+    this.showCycleCount = 0;
+    // 跟踪循环图片位置
+    this.trackCyclePosition = 0;
     // 木板集合
     this.boardsLeft = [
       {x: this.canvas.width / 2 - 80, y: this.canvas.height - 500, width: 11, height: 200, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 - 100, y: this.canvas.height - 800, width: 9, height: 120, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 - 60, y: this.canvas.height - 1100, width: 8, height: 80, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 - 120, y: this.canvas.height - 1600, width: 13, height: 150, type: 'ice', smooth: 6,
-      showClock: false, clockLimit: 2, isShow: true},
-      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 1900, width: 12, height: 100, type: 'metal', smooth: 0.01, showClock: true, clockLimit: 2, isShow: true}
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 1900, width: 12, height: 100, type: 'metal', smooth: 0.01, showClock: true, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 - 80, y: this.canvas.height - 2428, width: 18, height: 150, type: 'metal', smooth: 0.01, showClock: true, clockLimit: 1, showLimit: 8, isShow: true, showLogo: true},
+      {x: this.canvas.width / 2 - 108, y: this.canvas.height - 2828, width: 18, height: 125, type: 'wood', smooth: 1, showClock: false, clockLimit: 2, showLimit: 0, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 - 80, y: this.canvas.height - 3228, width: 12, height: 150, type: 'metal', smooth: 0.01, showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 3428, width: 12, height: 166, type: 'wood', smooth: 1, showClock: false, clockLimit: 1, showLimit: 8, isShow: true, showLogo: false}
     ];
     this.boardsRight = [
       {x: this.canvas.width / 2 + 80, y: this.canvas.height - 350, width: 9, height: 100, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 + 90, y: this.canvas.height - 600, width: 12, height: 180, type: 'ice', smooth: 8,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 + 60, y: this.canvas.height - 900, width: 13, height: 150, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 + 60, y: this.canvas.height - 1300, width: 12, height: 90, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 + 60, y: this.canvas.height - 1700, width: 10, height: 220, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 2, isShow: true},
-      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 2100, width: 10, height: 120, type: 'wood', smooth: 1,
-      showClock: false, clockLimit: 1, isShow: true}
+      showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 60, y: this.canvas.height - 2100, width: 10, height: 120, type: 'glass', smooth: 6,
+      showClock: false, clockLimit: 1, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 72, y: this.canvas.height - 2000, width: 8, height: 120, type: 'glass', smooth: 6,
+      showClock: false, clockLimit: 1, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 80, y: this.canvas.height - 2428, width: 18, height: 150, type: 'metal', smooth: 0.01, showClock: false, clockLimit: 1, showLimit: 8, isShow: true, showLogo: true},
+      {x: this.canvas.width / 2 + 108, y: this.canvas.height - 2628, width: 18, height: 175, type: 'wood', smooth: 1, showClock: false, clockLimit: 2, showLimit: 0, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 90, y: this.canvas.height - 3028, width: 20, height: 150, type: 'glass', smooth: 6, showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 90, y: this.canvas.height - 3500, width: 10, height: 320, type: 'glass', smooth: 6, showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 100, y: this.canvas.height - 3400, width: 10, height: 220, type: 'glass', smooth: 6, showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
+      {x: this.canvas.width / 2 + 110, y: this.canvas.height - 3300, width: 10, height: 120, type: 'metal', smooth: 0.01, showClock: true, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false}
     ]
     this.boards = this.boardsLeft.concat(this.boardsRight)
     backgroundMusic.playBackgroundMusic();
@@ -777,6 +895,7 @@ export default class Scene1 {
     this.groundImage.src = '';
     this.successTipsImage.src = '';
     this.failTipsImage.src = '';
+    this.cycleImage.src = '';
     this.ivyImage.src = '';
     this.iceImage.src = '';
     this.metalImage.src = '';
