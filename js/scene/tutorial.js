@@ -39,6 +39,8 @@ export default class Scene1 {
     this.scoreImage.src = 'image/uparrow.png'
     // 初始化分数
     this.score = 0;
+    // 初始时间
+    this.countTime = 0;
     this.groundImage = new Image();
     this.groundImage.src = 'image/yard.jpg';
     // 加载成功图片
@@ -87,7 +89,7 @@ export default class Scene1 {
       {x: this.canvas.width / 2 - 80, y: this.canvas.height - 2428, width: 18, height: 150, type: 'metal', smooth: 0.01, showClock: true, clockLimit: 1, showLimit: 8, isShow: true, showLogo: true},
       {x: this.canvas.width / 2 - 108, y: this.canvas.height - 2828, width: 18, height: 125, type: 'wood', smooth: 1, showClock: false, clockLimit: 2, showLimit: 0, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 - 80, y: this.canvas.height - 3228, width: 12, height: 150, type: 'metal', smooth: 0.01, showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
-      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 3428, width: 12, height: 166, type: 'wood', smooth: 1, showClock: false, clockLimit: 1, showLimit: 8, isShow: true, showLogo: false}
+      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 3428, width: 12, height: 166, type: 'wood', smooth: 0, showClock: false, clockLimit: 1, showLimit: 8, isShow: true, showLogo: false}
     ];
     this.boardsRight = [
       {x: this.canvas.width / 2 + 80, y: this.canvas.height - 350, width: 9, height: 100, type: 'wood', smooth: 1,
@@ -130,6 +132,9 @@ export default class Scene1 {
     // 钟表图片
     this.clockImage = new Image();
     this.clockImage.src = 'image/clock.png';
+    // 终点图片
+    this.endImage = new Image();
+    this.endImage.src = 'image/goal.png';
     // 在地面上角色图片集合
     this.ninjaImages = [];
     for (let i = 0; i <= 4; i++) {
@@ -636,7 +641,42 @@ export default class Scene1 {
       const cloudSpeed = 1; // 云朵的移动速度
       const cloudOffset = (Date.now() / 1000) * cloudSpeed; // 根据时间计算云朵的偏移量
       const cloudX = cloudOffset % this.canvas.width; // 根据偏移量计算云朵的当前 X 坐标
-      this.context.drawImage(this.cloudImage, cloudX, 0 + groundY, this.cloudImage.width, this.cloudImage.height);
+      this.context.drawImage(this.cloudImage, cloudX, -150 + groundY, this.cloudImage.width, this.cloudImage.height);
+    }
+  }
+  // 绘制终点图标
+  drawGoal() {
+    let groundY = 0;
+    if (this.ninja.y < this.canvas.height - 270) {
+      groundY = this.canvas.height - 270 - this.ninja.y
+    } else {
+      groundY = 0;
+    }
+    if (this.boardsLeft[8].clockLimit >= 2) {
+      if (this.endImage.complete) {
+        this.context.drawImage(this.endImage, this.canvas.width / 2 - 96, this.canvas.height - 3428 - this.endImage.height + groundY, this.endImage.width, this.endImage.height);
+      }
+    }
+  }
+  // 绘制时间变动
+  drawTimer() {
+    const hours = Math.floor(this.countTime / 3600).toString().padStart(2, '0');
+    const minutes = Math.floor((this.countTime % 3600) / 60).toString().padStart(2, '0');
+    const seconds = (this.countTime % 60).toString().padStart(2, '0');
+    const timeString = `${hours}:${minutes}:${seconds}`;
+    // 绘制时间文本
+    if (this.ninja.y > 120) {
+      this.context.fillStyle = 'white';
+    }else{
+      this.context.fillStyle = 'black';
+    }
+    this.context.font = '20px Arial';
+    this.context.textAlign = 'center'; // 文本左对齐
+    this.context.textBaseline = 'middle';
+    this.context.fillText(timeString, this.canvas.width / 2, this.canvas.height - menuButtonInfo.top - 20);
+    // 增加总秒数
+    if (!this.isGameOver) {
+      this.countTime++;
     }
   }
   draw() {
@@ -658,6 +698,8 @@ export default class Scene1 {
     this.drawClock();
     // 绘制循环标志
     this.drawCycleLogo();
+    // 绘制终点图标
+    this.drawGoal();
   }
   update() {
     if (!this.isGameOver) {
@@ -668,7 +710,7 @@ export default class Scene1 {
       // 更新钟表图标显示状态
       this.updateClock();
       // 更新循环图标显示状态
-      this.updateCycleLogo()
+      this.updateCycleLogo();
     }else{
       this.context.font = '16px Arial';
       if (this.ninja.downRank == 0) {
@@ -685,6 +727,8 @@ export default class Scene1 {
         this.buttonNextInfo = drawIconButton(this.context, "分享好友", this.canvas.width / 2, this.canvas.height / 2 + 110);
       }
     }
+    // 更新时间显示变化
+    this.drawTimer();
   }
   // 通用点击事件
   touchHandler(e) {
@@ -791,7 +835,6 @@ export default class Scene1 {
     clearTimeout(this.longPressTimer);
   }
   resetGame(){
-    this.score = 0;
     this.ninja = {
       x: this.canvas.width / 2 - 46.5, // 初始 x 位置
       y: this.canvas.height - 270, // 初始 y 位置
@@ -806,6 +849,10 @@ export default class Scene1 {
       toRight: false, // 是否向右跳
       downRank: 1, //下滑系数
     };
+    // 初始化分数
+    this.score = 0;
+    // 初始时间
+    this.countTime = 0;
     // 是否显示循环
     this.showCycle = false;
     // 是否允许统计
@@ -828,7 +875,7 @@ export default class Scene1 {
       {x: this.canvas.width / 2 - 80, y: this.canvas.height - 2428, width: 18, height: 150, type: 'metal', smooth: 0.01, showClock: true, clockLimit: 1, showLimit: 8, isShow: true, showLogo: true},
       {x: this.canvas.width / 2 - 108, y: this.canvas.height - 2828, width: 18, height: 125, type: 'wood', smooth: 1, showClock: false, clockLimit: 2, showLimit: 0, isShow: true, showLogo: false},
       {x: this.canvas.width / 2 - 80, y: this.canvas.height - 3228, width: 12, height: 150, type: 'metal', smooth: 0.01, showClock: false, clockLimit: 2, showLimit: 8, isShow: true, showLogo: false},
-      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 3428, width: 12, height: 166, type: 'wood', smooth: 1, showClock: false, clockLimit: 1, showLimit: 8, isShow: true, showLogo: false}
+      {x: this.canvas.width / 2 - 90, y: this.canvas.height - 3428, width: 12, height: 166, type: 'wood', smooth: 0, showClock: false, clockLimit: 1, showLimit: 8, isShow: true, showLogo: false}
     ];
     this.boardsRight = [
       {x: this.canvas.width / 2 + 80, y: this.canvas.height - 350, width: 9, height: 100, type: 'wood', smooth: 1,
@@ -902,6 +949,7 @@ export default class Scene1 {
     this.glassImage.src = '';
     this.clockImage.src = '';
     this.cloudImage.src = '';
+    this.endImage.src = '';
     this.ninjaJumpImage.src = '';
     this.ninjaJumpMirrorImage.src = '';
     this.ninjaImages = [];
