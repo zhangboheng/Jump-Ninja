@@ -2,7 +2,7 @@ import {
   drawRoundedRect
 } from '../../utils/button';
 let systemInfo = wx.getSystemInfoSync();
-export default class Scene1 {
+export default class Startup {
   constructor(game) {
     this.game = game;
     this.canvas = game.canvas;

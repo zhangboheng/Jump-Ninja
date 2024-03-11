@@ -11,7 +11,7 @@ const soundManager = new SoundManager();
 const backgroundMusic = new BackgroundMusic();
 let systemInfo = wx.getSystemInfoSync();
 let menuButtonInfo = wx.getMenuButtonBoundingClientRect();
-export default class Scene1 {
+export default class TrailFifth {
   constructor(game) {
     this.game = game;
     this.canvas = game.canvas;

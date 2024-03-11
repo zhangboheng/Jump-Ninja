@@ -5,7 +5,7 @@ import SoundManager from '../../utils/soundManager';
 import BackgroundMusic from '../../utils/backgroundMusic';
 let systemInfo = wx.getSystemInfoSync();
 let menuButtonInfo = wx.getMenuButtonBoundingClientRect();
-export default class Settings {
+export default class Instruction {
   constructor(game) {
     this.game = game;
     this.canvas = game.canvas;
