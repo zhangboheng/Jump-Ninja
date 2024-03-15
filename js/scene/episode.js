@@ -6,9 +6,8 @@ export default class Episode {
     this.game = game;
     this.canvas = game.canvas;
     this.context = game.context;
-    canvas.width = systemInfo.screenWidth * systemInfo.devicePixelRatio;
-    canvas.height = systemInfo.screenHeight * systemInfo.devicePixelRatio;
-    this.context.scale(systemInfo.devicePixelRatio, systemInfo.devicePixelRatio);
+    this.canvas.width = systemInfo.screenWidth;
+    this.canvas.height = systemInfo.screenHeight;
     // 绘制漫画集合
     this.imagePaths = ['image/storyparttwo.jpg', 'image/storypartthree.jpg'];
     this.displayTimePerImage = 3000; // 每张图片显示的时间（毫秒）
