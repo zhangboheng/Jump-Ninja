@@ -13,11 +13,17 @@ import TrailSixth from './scene/trailSixth.js';
 import TrailSeventh from './scene/trailSeventh.js';
 import TrailEighth from './scene/trailEighth.js';
 import Tutorial from './scene/tutorial.js';
+import { systemInfo } from '../utils/global';
 export default class Game {
   constructor() {
     this.initSettings();
     this.canvas = wx.createCanvas();
     this.context = canvas.getContext('2d');
+    this.canvas.width = systemInfo.screenWidth;
+    this.canvas.height = systemInfo.screenHeight;
+    canvas.width = systemInfo.screenWidth * systemInfo.devicePixelRatio;
+    canvas.height = systemInfo.screenHeight * systemInfo.devicePixelRatio;
+    this.context.scale(systemInfo.devicePixelRatio, systemInfo.devicePixelRatio);
     this.episode = Episode;
     this.startup = Startup;
     this.choose = Choose;
@@ -33,7 +39,7 @@ export default class Game {
     this.tutorial = Tutorial;
     this.settings = Settings;
     this.instruction = Instruction;
-    this.currentScene = new this.episode(this);
+    this.currentScene = new this.tutorial(this);
     this.instanceList = [Tutorial, TrailFirst, TrailSecond, TrailThird, TrailFourth, TrailFifth, TrailSixth, TrailSeventh, TrailEighth]
     canvas.addEventListener('touchstart', (e) => {
       this.currentScene.touchHandler(e);

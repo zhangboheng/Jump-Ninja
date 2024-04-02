@@ -1,24 +1,17 @@
 import {
-  createBackButton,
-  drawRoundedRectWithTail
+  createBackButton
 } from '../../utils/button';
-let systemInfo = wx.getSystemInfoSync();
-let menuButtonInfo = wx.getMenuButtonBoundingClientRect();
+import { systemInfo, menuButtonInfo, scaleX, scaleY } from '../../utils/global';
 export default class Select {
   constructor(game) {
     this.game = game;
     this.canvas = game.canvas;
     this.context = game.context;
-    canvas.width = systemInfo.screenWidth * systemInfo.devicePixelRatio;
-    canvas.height = systemInfo.screenHeight * systemInfo.devicePixelRatio;
-    this.context.scale(systemInfo.devicePixelRatio, systemInfo.devicePixelRatio);
-    // 绘制背景
+    /* 图片加载区域开始 */
     this.backgroundImage = new Image();
     this.backgroundImage.src = 'image/houseback.jpg';
-    // 创建返回按钮
-    this.backButton = createBackButton(this.context, 10, menuButtonInfo.top, 'image/reply.png', () => {
-      this.game.switchScene(new this.game.choose(this.game));
-    });
+    this.backButton = '';
+    /* 图片加载区域结束 */
   }
   // 绘制背景
   drawBackground() {
@@ -32,34 +25,12 @@ export default class Select {
   }
   // 绘制返回按钮
   drawBack() {
+    this.backButton = createBackButton(this.context, 10, menuButtonInfo.top, 'image/reply.png', () => {
+      this.game.switchScene(new this.game.choose(this.game));
+    });
     if (this.backButton.image.complete) {
       this.context.drawImage(this.backButton.image, this.backButton.x, this.backButton.y);
     }
-  }
-  // 绘制加入我的小程序提示
-  drawTips(){
-    // 提示框属性
-    const rectWidth = 140;
-    const rectHeight = 30;
-    const borderRadius = 10;
-    const tailWidth = 20; // 尾巴的宽度
-    const tailHeight = 28; // 尾巴的高度
-    const rectX = menuButtonInfo.right - menuButtonInfo.width - rectWidth - tailWidth;
-    const rectY = menuButtonInfo.top; // 可以根据需要调整
-    // 绘制半透明矩形
-    this.context.fillStyle = '#f5d659'; // 增加透明度
-    drawRoundedRectWithTail(this.context, rectX, rectY, rectWidth, rectHeight, borderRadius, tailWidth, tailHeight, 'right');
-    this.context.fill();
-    this.context.strokeStyle = 'black';
-    this.context.lineWidth = 3;
-    drawRoundedRectWithTail(this.context, rectX, rectY, rectWidth, rectHeight, borderRadius, tailWidth, tailHeight);
-    this.context.stroke();
-    // 绘制提示文本
-    this.context.fillStyle = 'black';
-    this.context.font = '14px Arial';
-    this.context.textAlign = 'center';
-    this.context.textBaseline = 'middle';
-    this.context.fillText('请选择试炼关卡', rectX + rectWidth / 2, rectY + rectHeight / 2 + 2); 
   }
   // 绘制矩形集合
   drawSquareBox() {
@@ -75,6 +46,7 @@ export default class Select {
         // 渲染数字
         const fontSize = gridSize / 2.5;
         const number = row * gridCount + col + 1;
+        this.context.save();
         // 渲染矩形格子
         this.context.fillStyle = number <= getTrailGame + 1 ? '#f5d659' : '#e0e0e0';
         this.context.fillRect(x, y + menuButtonInfo.bottom, gridSize, gridSize);
@@ -90,6 +62,7 @@ export default class Select {
         const centerX = x + gridSize / 2;
         const centerY = y + gridSize / 2;
         this.context.fillText(number.toString().padStart(2, '0'), centerX, centerY + menuButtonInfo.bottom);
+        this.context.restore();
       }
     }
   }
@@ -99,8 +72,6 @@ export default class Select {
     this.drawBackground();
     // 绘制返回按钮
     this.drawBack();
-    // 绘制加入我的小程序提示
-    this.drawTips();
     // 绘制矩形集合
     this.drawSquareBox();
   }
@@ -159,5 +130,6 @@ export default class Select {
   destroy() {
     // 清理资源，如图片
     this.backButton.image.src = '';
+    this.backgroundImage.src = '';
   }
 }

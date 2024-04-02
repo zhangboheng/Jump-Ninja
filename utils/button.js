@@ -1,3 +1,4 @@
+import { scaleX, scaleY } from './global';
 // 带有描边的按钮公共方法
 export function drawRoundedRect(context, x, y, width, height, radius, fillColor, strokeColor, strokeWidth) {
   context.beginPath();
@@ -45,30 +46,36 @@ export function createBackButton(context, x, y, imagePath, callback) {
 }
 // 带有图标的返回按钮公共方法
 export function drawIconButton(context, text, x, y, callback) {
+  context.save();
   // 设置文本样式
   context.fillStyle = '#f5d659';
   context.strokeStyle = 'black';
   context.lineWidth = 3;
-  context.font = 'bold 20px';
+  // 绘制文本背景
+  const padding = 60 * scaleX; // 边距宽度
+  const boxWidth = context.measureText(text).width * scaleX + padding * 2;
+  const boxHeight = 60 * scaleY; // 提示框的高度，可以根据需要调整
+  context.fillRect(x - boxWidth / 2, y - boxHeight / 2, boxWidth, boxHeight);
+  context.strokeRect(x - boxWidth / 2, y - boxHeight / 2, boxWidth, boxHeight);
+  context.restore();
+  // 绘制文本;
+  context.save();
+  context.font = `bold ${16 * scaleX}px Arial`;
+  context.fillStyle = 'black';
   context.textAlign = 'center';
   context.textBaseline = 'middle';
-  // 绘制文本背景
-  const padding = 60; // 边距宽度
-  const textWidth = context.measureText(text).width + padding * 2;
-  const textHeight = 60; // 提示框的高度，可以根据需要调整
-  context.fillRect(x - textWidth / 2, y - textHeight / 2, textWidth, textHeight);
-  context.strokeRect(x - textWidth / 2, y - textHeight / 2, textWidth, textHeight);
-  // 绘制文本
-  context.fillStyle = 'black';
-  context.fillText(text, x, y + 2);
+  const textY = y + 2 * scaleY; // 垂直居中
+  context.fillText(text, x, textY);
+  context.restore();
   // 返回按钮尺寸信息
   return {
-    x: x - (textWidth + padding * 2) / 2,
-    y: y - 60 / 2,
-    width: textWidth + padding * 2,
-    height: 60
+    x: x - boxWidth / 2,
+    y: y - boxHeight / 2,
+    width: boxWidth,
+    height: boxHeight
   };
 }
+
 
 export function drawRoundedRectNoStrike(ctx, x, y, width, height, radius, strokeColor, strokeWidth) {
   ctx.beginPath();

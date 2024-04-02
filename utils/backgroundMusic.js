@@ -35,6 +35,13 @@ class BackgroundMusic {
       this.backgroundMusic.currentTime = 0
     }
   }
+  // 停止背景音乐
+  stopBackgroundMusic(){
+    if (this.backgroundMusicEnabled) {
+      this.backgroundMusic.stop();
+      this.backgroundMusic.currentTime = 0;
+    }
+  }
 }
 
 export default BackgroundMusic
