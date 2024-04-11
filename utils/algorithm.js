@@ -5,15 +5,22 @@ export function updateHighScores(currentScore) {
   if (!Array.isArray(highScores)) {
     highScores = [];
   }
-  // 将当前分数添加到数组中
   highScores.push(currentScore);
-  // 对数组进行排序，最高分在前
-  highScores.sort((a, b) => b - a);
-  // 如果数组长度超过10，移除最低分（数组最后一个元素）
+  highScores = highScores.map(timeStr => {
+    const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+    return hours * 3600 + minutes * 60 + seconds;
+  });
+  highScores.sort((a, b) => a - b);
+  console.info('--->', highScores)
   if (highScores.length > 10) {
     highScores.pop();
   }
-  // 将更新后的排名保存回缓存
+  highScores = highScores.map(totalSeconds => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  });
   try {
     wx.setStorageSync('historyRank', JSON.stringify(highScores));
   } catch (e) {

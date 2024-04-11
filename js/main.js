@@ -39,7 +39,7 @@ export default class Game {
     this.tutorial = Tutorial;
     this.settings = Settings;
     this.instruction = Instruction;
-    this.currentScene = new this.tutorial(this);
+    this.currentScene = new this.episode(this);
     this.instanceList = [Tutorial, TrailFirst, TrailSecond, TrailThird, TrailFourth, TrailFifth, TrailSixth, TrailSeventh, TrailEighth]
     canvas.addEventListener('touchstart', (e) => {
       this.currentScene.touchHandler(e);
@@ -73,8 +73,13 @@ export default class Game {
   initSettings() {
     let getMusicState = wx.getStorageSync('musicEnabled');
     let getBackgroundMusic = wx.getStorageSync('backgroundMusicEnabled');
+    let getHistoryRank = wx.getStorageSync('historyRank');
     if (getMusicState == ''){
       wx.setStorageSync('musicEnabled', true)
+    }
+    if (getHistoryRank == ''){
+      let scores = JSON.stringify(['99:99:99','99:99:99','99:99:99','99:99:99','99:99:99','99:99:99','99:99:99','99:99:99','99:99:99','99:99:99']);
+      wx.setStorageSync('historyRank', scores);
     }
     if (getBackgroundMusic == ''){
       wx.setStorageSync('backgroundMusicEnabled', true)  

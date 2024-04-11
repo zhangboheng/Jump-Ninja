@@ -7,6 +7,7 @@ export default class Instruction {
     this.game = game;
     this.canvas = game.canvas;
     this.context = game.context;
+    this.bannerAd = '';
     /* 图片加载区域开始 */
     this.backgroundImage = new Image();
     this.backgroundImage.src = 'image/thumbnail.jpg';
@@ -23,6 +24,26 @@ export default class Instruction {
     this.paragraph = "东瀛大地，在北海道深处\n有一座被称为“跃影山”的山峰\n这座山蕴藏着古老的忍者秘技\n但其顶端从未被任何人到达\n据说，只有拥有极强跳跃能力的忍者\n才能攀登至山巅\n一位名叫上影翔的年轻忍者\n在师傅的悉心栽培下\n刻苦修炼十余年\n他已经准备好了\n决定挑战这座被誉为忍者之巅的山峰\n上影翔相信\n攀登至山巅将带给他无法想象的力量\n使他成为真正的忍者大师\n但是，这条路上并不轻松\n无尽的危险在等待他"
     this.selectedIndex = 0;
     /* 常量设置区域结束 */
+    this.drawAd();
+  }
+  // 绘制广告
+  drawAd() {
+    this.bannerAd = wx.createBannerAd({
+      adUnitId: 'adunit-7f796a4abc7012fd',
+      style: {
+          left: 10,
+          top: 0,
+          width: this.canvas.width - 20
+      }
+    });
+    this.bannerAd.show()
+    this.bannerAd.onResize(res => {
+      this.bannerAd.style.top = this.canvas.height - res.height - 10
+    })
+    // 监听 banner 广告错误事件
+    this.bannerAd.onError(err => {
+      console.error(err.errMsg)
+    });
   }
   // 绘制背景
   drawBackground() {
@@ -102,11 +123,12 @@ export default class Instruction {
     } else if (this.selectedIndex === 1) {
       const iconY = 10 * scaleY;
       const iconHeight = 76 * scaleY;
-      const iconWidth = 93 * scaleY;
+      const iconWidth = 93 * scaleX;
       const intro = ['姓名：上影翔', '年龄：未知', '练习时长：12年半', '绝技：飞檐走壁']
       // 计算文本高度和总内容高度
       const textHeight = fontSize * 1.2;
-      const contentHeight = intro.length * textHeight + 20 * scaleY;
+      let compareHeight = intro.length * textHeight >= iconHeight ? intro.length * textHeight : iconHeight
+      const contentHeight = compareHeight + 20 * scaleY;
       // 绘制矩形
       this.context.fillStyle = '#f5d659';
       this.context.strokeStyle = 'black';
@@ -215,6 +237,8 @@ export default class Instruction {
   }
   // 页面销毁机制
   destroy() {
+    this.bannerAd.hide();
+    this.bannerAd = '';
     this.backButton.image.src = '';
     this.backgroundImage.src = '';
     this.role.src = '';

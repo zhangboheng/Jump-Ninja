@@ -13,6 +13,7 @@ export default class TrailThird {
     this.context = game.context;
     /* 加载音乐音效管理器开始 */
     backgroundMusic.setBackgroundMusicState(wx.getStorageSync('backgroundMusicEnabled'));
+    backgroundMusic.setBackgroundMusicSource('audio/back.mp3');
     backgroundMusic.playBackgroundMusic();
     soundManager.setMusicState(wx.getStorageSync('musicEnabled'));
     /* 加载音乐音效管理器结束 */
@@ -88,7 +89,7 @@ export default class TrailThird {
       smooth: 8
     },{
       x: this.canvas.width / 2 - 50 * scaleX,
-      y: this.canvas.height - 800,
+      y: this.canvas.height - 800 * scaleY,
       width: 20 * scaleX,
       height: 60 * scaleY,
       type: 'ice',
@@ -532,7 +533,7 @@ export default class TrailThird {
       smooth: 8
     },{
       x: this.canvas.width / 2 - 50 * scaleX,
-      y: this.canvas.height - 800,
+      y: this.canvas.height - 800 * scaleY,
       width: 20 * scaleX,
       height: 60 * scaleY,
       type: 'ice',

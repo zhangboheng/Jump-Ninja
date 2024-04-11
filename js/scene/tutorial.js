@@ -3,6 +3,9 @@ import {
   drawIconButton,
 } from '../../utils/button';
 import {
+  updateHighScores
+} from '../../utils/algorithm';
+import {
   showBoxMessage
 } from '../../utils/dialog';
 import {
@@ -17,6 +20,7 @@ export default class Tutorial {
     this.game = game;
     this.canvas = game.canvas;
     this.context = game.context;
+    this.interstitialAd = null;
     /* 加载音乐音效管理器开始 */
     backgroundMusic.setBackgroundMusicState(wx.getStorageSync('backgroundMusicEnabled'));
     backgroundMusic.setBackgroundMusicSource('audio/begin.mp3');
@@ -393,6 +397,7 @@ export default class Tutorial {
     this.boards = this.boardsLeft.concat(this.boardsRight);
     this.score = 0;
     this.countTime = 0;
+    this.countTimeFormat = "00:00:00";
     // 是否显示循环
     this.showCycle = false;
     // 是否允许统计
@@ -429,6 +434,14 @@ export default class Tutorial {
     wx.onTouchStart(this.touchStartHandler.bind(this));
     wx.onTouchEnd(this.touchEndHandler.bind(this));
     /* 事件处理监听绑定结束 */
+    this.drawAd();
+  }
+  drawAd() {
+    if (wx.createInterstitialAd){
+      this.interstitialAd = wx.createInterstitialAd({
+        adUnitId: 'adunit-c95a37f5d6cf1962'
+      })
+    }
   }
   // 绘制背景图片
   drawBackground() {
@@ -798,6 +811,7 @@ export default class Tutorial {
       this.isGameOver = true;
       backgroundMusic.stopBackgroundMusic();
       soundManager.play('win');
+      updateHighScores(this.countTimeFormat);
     }
   }
   // 绘制木板
@@ -868,7 +882,7 @@ export default class Tutorial {
     const hours = Math.floor(this.countTime / 3600).toString().padStart(2, '0');
     const minutes = Math.floor((this.countTime % 3600) / 60).toString().padStart(2, '0');
     const seconds = (this.countTime % 60).toString().padStart(2, '0');
-    const timeString = `${hours}:${minutes}:${seconds}`;
+    this.countTimeFormat = `${hours}:${minutes}:${seconds}`;
     this.context.save();
     // 绘制时间文本
     if (this.ninja.y > 120 * scaleY) {
@@ -879,7 +893,7 @@ export default class Tutorial {
     this.context.font = `${20 * scaleX}px Arial`;
     this.context.textAlign = 'center'; // 文本左对齐
     this.context.textBaseline = 'middle';
-    this.context.fillText(timeString, this.canvas.width / 2, this.canvas.height - menuButtonInfo.top - 20 * scaleY);
+    this.context.fillText(this.countTimeFormat, this.canvas.width / 2, this.canvas.height - menuButtonInfo.top - 20 * scaleY);
     this.context.restore();
     // 增加总秒数
     if (!this.isGameOver) {
@@ -957,6 +971,11 @@ export default class Tutorial {
     if (this.isGameOver) {
       if (touchX >= this.buttonStartInfo.x && touchX <= this.buttonStartInfo.x + this.buttonStartInfo.width &&
         touchY >= this.buttonStartInfo.y && touchY <= this.buttonStartInfo.y + this.buttonStartInfo.height) {
+          if (this.interstitialAd) {
+            this.interstitialAd.show().catch((err) => {
+              console.error('插屏广告显示失败', err)
+            })
+          }
         this.resetGame();
       }
       if (touchX >= this.buttonNextInfo.x && touchX <= this.buttonNextInfo.x + this.buttonNextInfo.width &&
@@ -1361,6 +1380,7 @@ export default class Tutorial {
     this.boards = this.boardsLeft.concat(this.boardsRight);
     this.score = 0;
     this.countTime = 0;
+    this.countTimeFormat = "00:00:00";
     this.angle = 0;
     // 是否显示循环
     this.showCycle = false;
@@ -1391,6 +1411,7 @@ export default class Tutorial {
   }
   // 页面销毁机制
   destroy() {
+    this.interstitialAd = null;
     // 移除触摸事件监听器
     wx.offTouchStart(this.touchStartHandler.bind(this));
     wx.offTouchEnd(this.touchEndHandler.bind(this));

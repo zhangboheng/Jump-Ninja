@@ -19,6 +19,7 @@ export default class Traileighth {
     this.context = game.context;
     /* 加载音乐音效管理器开始 */
     backgroundMusic.setBackgroundMusicState(wx.getStorageSync('backgroundMusicEnabled'));
+    backgroundMusic.setBackgroundMusicSource('audio/back.mp3');
     backgroundMusic.playBackgroundMusic();
     soundManager.setMusicState(wx.getStorageSync('musicEnabled'));
     /* 加载音乐音效管理器结束 */

@@ -19,6 +19,7 @@ export default class Trailseventh {
     this.context = game.context;
     /* 加载音乐音效管理器开始 */
     backgroundMusic.setBackgroundMusicState(wx.getStorageSync('backgroundMusicEnabled'));
+    backgroundMusic.setBackgroundMusicSource('audio/back.mp3');
     backgroundMusic.playBackgroundMusic();
     soundManager.setMusicState(wx.getStorageSync('musicEnabled'));
     /* 加载音乐音效管理器结束 */
@@ -92,7 +93,7 @@ export default class Trailseventh {
     };
     // 木板集合
     this.boardsLeft = [{
-      x: this.canvas.width / 2 - 90 * scaleX,
+      x: this.canvas.width / 2 - 100 * scaleX,
       y: this.canvas.height - 650 * scaleY,
       width: 12 * scaleX,
       height: 100 * scaleY,
@@ -190,7 +191,7 @@ export default class Trailseventh {
   // 绘制终点图标
   drawGoal() {
     if (this.endImage.complete) {
-      this.context.drawImage(this.endImage, this.canvas.width / 2 - 95 * scaleX, this.canvas.height - 650 * scaleY - this.endImage.height * scaleY + this.ninja.groundY, this.endImage.width * scaleX, this.endImage.height * scaleY);
+      this.context.drawImage(this.endImage, this.canvas.width / 2 - 105 * scaleX, this.canvas.height - 650 * scaleY - this.endImage.height * scaleY + this.ninja.groundY, this.endImage.width * scaleX, this.endImage.height * scaleY);
     }
   }
   // 绘制返回按钮
@@ -625,7 +626,7 @@ export default class Trailseventh {
     };
     // 木板集合
     this.boardsLeft = [{
-      x: this.canvas.width / 2 - 90 * scaleX,
+      x: this.canvas.width / 2 - 100 * scaleX,
       y: this.canvas.height - 650 * scaleY,
       width: 12 * scaleX,
       height: 100 * scaleY,

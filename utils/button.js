@@ -109,3 +109,30 @@ export function drawRoundedRectWithTail(context, x, y, width, height, borderRadi
   context.arcTo(x, y, x + borderRadius, y, borderRadius);
   context.closePath();
 }
+
+// 图标下面的文字
+export function drawImageBtn(context, rankImage, x = 10, y = menuButtonInfo.top, scaleX, scaleY, text = '成绩榜', fontColor = '#000') {
+  const imageSize = {
+    width: 32 * scaleY,
+    height: 32 * scaleY
+  };
+
+  if (rankImage.complete) {
+    context.drawImage(rankImage, x, y, imageSize.width, imageSize.height);
+  }
+  context.save();
+  context.fillStyle = `${fontColor}`;
+  context.font = `bold ${10 * scaleX}px Arial`;
+  context.textAlign = 'center';
+  context.fillText(text, x + (imageSize.width) / 2, y + imageSize.height + 10 * scaleX);
+  context.restore();
+
+  const imagePosition = {
+    x: x,
+    y: y,
+    width: imageSize.width,
+    height: imageSize.height
+  };
+
+  return imagePosition;
+}
