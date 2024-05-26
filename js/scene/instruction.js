@@ -61,7 +61,7 @@ export default class Instruction {
       this.game.switchScene(new this.game.startup(this.game));
     })
     if (this.backButton.image.complete) {
-      this.context.drawImage(this.backButton.image, this.backButton.x, this.backButton.y);
+            this.context.drawImage(this.backButton.image, this.backButton.x, this.backButton.y, 32, 32);
     }
   }
   // 绘制标签按钮

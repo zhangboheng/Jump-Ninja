@@ -37,9 +37,9 @@ export function createBackButton(context, x, y, imagePath, callback) {
   };
 
   image.onload = () => {
-    button.width = image.width;
-    button.height = image.height;
-    context.drawImage(image, x, y);
+    button.width = 32;
+    button.height = 32;
+    context.drawImage(image, x, y, 32, 32);
   };
 
   return button;

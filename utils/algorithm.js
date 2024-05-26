@@ -11,7 +11,6 @@ export function updateHighScores(currentScore) {
     return hours * 3600 + minutes * 60 + seconds;
   });
   highScores.sort((a, b) => a - b);
-  console.info('--->', highScores)
   if (highScores.length > 10) {
     highScores.pop();
   }

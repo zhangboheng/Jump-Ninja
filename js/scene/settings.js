@@ -67,7 +67,7 @@ export default class Settings {
       this.game.switchScene(new this.game.startup(this.game));
     });
     if (this.backButton.image.complete) {
-      this.context.drawImage(this.backButton.image, this.backButton.x, this.backButton.y);
+            this.context.drawImage(this.backButton.image, this.backButton.x, this.backButton.y, 32, 32);
     }
   }
   // 绘制标签按钮
@@ -149,8 +149,8 @@ export default class Settings {
       // 开关状态
       const isSwitchOn = wx.getStorageSync('musicEnabled') ? true : wx.getStorageSync('musicEnabled');
       const isBackMusicOn = wx.getStorageSync('backgroundMusicEnabled') ? true : wx.getStorageSync('backgroundMusicEnabled');
-      const textWidth = this.context.measureText('V 1.0.2').width;
-      this.context.fillText('V 1.0.2', switchX + switchWidth - textWidth / 2, iconY + iconSize / 2);
+      const textWidth = this.context.measureText('V 1.0.3').width;
+      this.context.fillText('V 1.0.3', switchX + switchWidth - textWidth / 2, iconY + iconSize / 2);
       // 绘制圆角矩形背景
       this.context.fillStyle = isSwitchOn ? '#4CAF50' : '#cccccc';
       drawRoundedRectNoStrike(this.context, switchX, switchY, switchWidth, switchHeight, borderRadius, '#000000', 3);
@@ -175,8 +175,8 @@ export default class Settings {
     } else if (this.selectedIndex === 1) {
       const fontSize = 16 * scaleX;
       this.context.font = `${fontSize}px Arial`;
-      const arr = ['版本 1.0.2', '增加广告','增加到达终点用时排行', '', '版本 1.0.1', '适配屏幕','', '版本 1.0.0', 'Demo 版本发布'];
-      const list = ['2024-04-11', '', '', '', '2024-04-10', '', '', '2024-02-05', ''];
+      const arr = ['版本 1.0.3', '增强美化 UI','', '版本 1.0.2', '增加广告','增加到达终点用时排行', '', '版本 1.0.1', '适配屏幕','', '版本 1.0.0', 'Demo 版本发布'];
+      const list = ['2024-04-15', '', '', '2024-04-11', '', '', '', '2024-04-10', '', '', '2024-02-05', ''];
       // 计算文本高度和总内容高度
       const textHeight = fontSize * 1.2;
       const contentHeight = arr.length * textHeight + 20 * scaleY;

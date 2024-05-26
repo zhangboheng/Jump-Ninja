@@ -78,7 +78,7 @@ export default class Game {
       wx.setStorageSync('musicEnabled', true)
     }
     if (getHistoryRank == ''){
-      let scores = JSON.stringify(['99:99:99','99:99:99','99:99:99','99:99:99','99:99:99','99:99:99','99:99:99','99:99:99','99:99:99','99:99:99']);
+      let scores = JSON.stringify(['99:59:59','99:59:59','99:59:59','99:59:59','99:59:59','99:59:59','99:59:59','99:59:59','99:59:59','99:59:59']);
       wx.setStorageSync('historyRank', scores);
     }
     if (getBackgroundMusic == ''){

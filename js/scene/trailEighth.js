@@ -37,8 +37,6 @@ export default class Traileighth {
     this.metalImage.src = 'image/endflag.png';
     this.glassImage = new Image();
     this.glassImage.src = 'image/glass.png';
-    this.cycleImage = new Image();
-    this.cycleImage.src = 'image/cycle.png';
     this.clockImage = new Image();
     this.clockImage.src = 'image/clock.png';
     this.endImage = new Image();
@@ -228,7 +226,7 @@ export default class Traileighth {
   // 绘制终点图标
   drawGoal() {
     if (this.endImage.complete) {
-      this.context.drawImage(this.endImage, this.canvas.width / 2 + 115 * scaleX, this.canvas.height - 1100 * scaleY - this.endImage.height * scaleY + this.ninja.groundY, this.endImage.width * scaleX, this.endImage.height * scaleY);
+      this.context.drawImage(this.endImage, this.canvas.width / 2 + 120 * scaleX - 16 * scaleY, this.canvas.height - 1100 * scaleY - 64 * scaleY + this.ninja.groundY, 64 * scaleY, 64 * scaleY);
     }
   }
   // 绘制返回按钮
@@ -237,7 +235,7 @@ export default class Traileighth {
       this.game.switchScene(new this.game.select(this.game));
     });
     if (this.backButton.image.complete) {
-      this.context.drawImage(this.backButton.image, this.backButton.x, this.backButton.y);
+            this.context.drawImage(this.backButton.image, this.backButton.x, this.backButton.y, 32, 32);
     }
   }
   // 绘制消息提示
@@ -256,7 +254,7 @@ export default class Traileighth {
         this.context.save();
         this.context.translate(this.canvas.width / 2, this.trackClockPosition + 50 * scaleY + this.ninja.groundY);
         this.context.rotate(this.angle);
-        this.context.drawImage(this.clockImage, - this.clockImage.width * scaleY / 2, - this.clockImage.height * scaleY / 2, this.clockImage.width * scaleY, this.clockImage.height * scaleY);
+        this.context.drawImage(this.clockImage, - 64 * scaleY / 2, - 64 * scaleY / 2, 64 * scaleY, 64 * scaleY);
         this.context.restore();
         // 增加角度以实现旋转
         this.angle += 0.02;
@@ -579,7 +577,7 @@ export default class Traileighth {
     } else {
       if (this.ninja.downRank == 0) {
         if (this.successTipsImage.complete) {
-          this.context.drawImage(this.successTipsImage, (this.canvas.width - this.successTipsImage.width * scaleX) / 2, (this.canvas.height - this.successTipsImage.height * scaleY) / 2 - this.successTipsImage.height * scaleY / 2, this.successTipsImage.width * scaleX, this.successTipsImage.height * scaleY);
+          this.context.drawImage(this.successTipsImage, (this.canvas.width - 320 * scaleX) / 2, (this.canvas.height - 178 * scaleY) / 2 - 178 * scaleY / 2, 320 * scaleX, 178 * scaleY);
         }
         this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2 + 40 * scaleY);
         this.buttonNextInfo = drawIconButton(this.context, "返回选关", this.canvas.width / 2, this.canvas.height / 2 + 110 * scaleY);
@@ -850,7 +848,6 @@ export default class Traileighth {
     this.iceImage.src = '';
     this.metalImage.src = '';
     this.glassImage.src = '';
-    this.cycleImage.src = '';
     this.clockImage.src = '';
     this.endImage.src = '';
     this.ninjaImages.forEach(img => img = null);

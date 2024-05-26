@@ -178,7 +178,7 @@ export default class Trailfifth {
   // 绘制终点图标
   drawGoal() {
     if (this.endImage.complete && this.boards[4].showLimit >= 8) {
-      this.context.drawImage(this.endImage, this.canvas.width / 2 + 86 * scaleX, this.canvas.height - 1200 * scaleY - this.endImage.height * scaleY + this.ninja.groundY, this.endImage.width * scaleX, this.endImage.height * scaleY);
+      this.context.drawImage(this.endImage, this.canvas.width / 2 + 90 * scaleX - 16 * scaleY, this.canvas.height - 1200 * scaleY - 64 * scaleY + this.ninja.groundY, 64 * scaleY, 64 * scaleY);
     }
   }
   // 绘制返回按钮
@@ -187,7 +187,7 @@ export default class Trailfifth {
       this.game.switchScene(new this.game.select(this.game));
     });
     if (this.backButton.image.complete) {
-      this.context.drawImage(this.backButton.image, this.backButton.x, this.backButton.y);
+            this.context.drawImage(this.backButton.image, this.backButton.x, this.backButton.y, 32, 32);
     }
   }
   // 绘制消息提示
@@ -206,7 +206,7 @@ export default class Trailfifth {
         this.context.save();
         this.context.translate(this.canvas.width / 2, this.canvas.height - 1000 * scaleY + this.ninja.groundY);
         this.context.rotate(this.angle);
-        this.context.drawImage(this.cycleImage, - this.cycleImage.width * scaleY / 2, - this.cycleImage.height * scaleY / 2, this.cycleImage.width * scaleY, this.cycleImage.height * scaleY);
+        this.context.drawImage(this.cycleImage, - 64 * scaleY / 2, - 64 * scaleY / 2, 64 * scaleY, 64 * scaleY);
         this.context.restore();
         // 增加角度以实现旋转
         this.angle += 0.02;
@@ -443,7 +443,7 @@ export default class Trailfifth {
     } else {
       if (this.ninja.downRank == 0) {
         if (this.successTipsImage.complete) {
-          this.context.drawImage(this.successTipsImage, (this.canvas.width - this.successTipsImage.width * scaleX) / 2, (this.canvas.height - this.successTipsImage.height * scaleY) / 2 - this.successTipsImage.height * scaleY / 2, this.successTipsImage.width * scaleX, this.successTipsImage.height * scaleY);
+          this.context.drawImage(this.successTipsImage, (this.canvas.width - 320 * scaleX) / 2, (this.canvas.height - 176 * scaleY) / 2 - 176 * scaleY / 2, 320 * scaleX, 176 * scaleY);
         }
         this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2 + 40 * scaleY);
         this.buttonNextInfo = drawIconButton(this.context, "前往下关", this.canvas.width / 2, this.canvas.height / 2 + 110 * scaleY);

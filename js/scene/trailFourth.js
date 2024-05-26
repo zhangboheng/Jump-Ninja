@@ -164,7 +164,7 @@ export default class TrailFourth {
   // 绘制终点图标
   drawGoal() {
     if (this.endImage.complete) {
-      this.context.drawImage(this.endImage, this.canvas.width / 2 - 135 * scaleX, this.canvas.height - 480 * scaleY - this.endImage.height * scaleY + this.ninja.groundY, this.endImage.width * scaleX, this.endImage.height * scaleY);
+      this.context.drawImage(this.endImage, this.canvas.width / 2 - 125 * scaleX - 16 * scaleY, this.canvas.height - 480 * scaleY - 64 * scaleY + this.ninja.groundY, 64 * scaleY, 64 * scaleY);
     }
   }
   // 绘制返回按钮
@@ -173,7 +173,7 @@ export default class TrailFourth {
       this.game.switchScene(new this.game.select(this.game));
     });
     if (this.backButton.image.complete) {
-      this.context.drawImage(this.backButton.image, this.backButton.x, this.backButton.y);
+            this.context.drawImage(this.backButton.image, this.backButton.x, this.backButton.y, 32, 32);
     }
   }
   // 绘制消息提示
@@ -391,7 +391,7 @@ export default class TrailFourth {
     } else {
       if (this.ninja.downRank == 0) {
         if (this.successTipsImage.complete) {
-          this.context.drawImage(this.successTipsImage, (this.canvas.width - this.successTipsImage.width * scaleX) / 2, (this.canvas.height - this.successTipsImage.height * scaleY) / 2 - this.successTipsImage.height * scaleY / 2, this.successTipsImage.width * scaleX, this.successTipsImage.height * scaleY);
+          this.context.drawImage(this.successTipsImage, (this.canvas.width - 320 * scaleX) / 2, (this.canvas.height - 176 * scaleY) / 2 - 176 * scaleY / 2, 320 * scaleX, 176 * scaleY);
         }
         this.buttonStartInfo = drawIconButton(this.context, "重新开始", this.canvas.width / 2, this.canvas.height / 2 + 40 * scaleY);
         this.buttonNextInfo = drawIconButton(this.context, "前往下关", this.canvas.width / 2, this.canvas.height / 2 + 110 * scaleY);
